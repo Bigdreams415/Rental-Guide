@@ -7,6 +7,9 @@ class ApiEndpoints {
   static const String login    = '$_base/auth/login';
   static const String me       = '$_base/auth/me';
 
+  // Users
+  static String userById(String id) => '$_base/users/$id';
+
   // Properties
   static const String properties     = '$_base/properties/';
   static const String createProperty = '$_base/properties/';
