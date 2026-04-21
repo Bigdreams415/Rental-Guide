@@ -49,9 +49,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     final uri = Uri.parse('tel:+$number');
     if (!await launchUrl(uri)) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open dialer')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open dialer')));
       }
     }
   }
@@ -101,8 +101,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
     final List<String> imageUrls = property.images.isNotEmpty
         ? property.images.map((e) => e.imageUrl).toList()
         : (property.mainImage != null && property.mainImage!.isNotEmpty)
-            ? [property.mainImage!]
-            : [];
+        ? [property.mainImage!]
+        : [];
 
     return Scaffold(
       body: CustomScrollView(
@@ -121,7 +121,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   color: Colors.black54,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
               onPressed: () => Navigator.pop(context),
             ),
@@ -133,7 +137,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     color: Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Iconsax.heart, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Iconsax.heart,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 onPressed: () {},
               ),
@@ -144,7 +152,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     color: Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Iconsax.share, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Iconsax.share,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
                 onPressed: () {},
               ),
@@ -174,7 +186,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Icon(Iconsax.location, size: 14, color: AppColors.grey),
+                                Icon(
+                                  Iconsax.location,
+                                  size: 14,
+                                  color: AppColors.grey,
+                                ),
                                 const SizedBox(width: 4),
                                 Expanded(
                                   child: Text(
@@ -210,7 +226,10 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             const SizedBox(height: 4),
                             Text(
                               '${property.viewCount} views',
-                              style: TextStyle(fontSize: 11, color: AppColors.grey),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: AppColors.grey,
+                              ),
                             ),
                           ],
                         ),
@@ -228,11 +247,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     runSpacing: 12,
                     children: [
                       if (property.bedrooms != null && property.bedrooms! > 0)
-                        _buildFeatureChip(Iconsax.home, '${property.bedrooms} Bedrooms'),
+                        _buildFeatureChip(
+                          Iconsax.home,
+                          '${property.bedrooms} Bedrooms',
+                        ),
                       if (property.bathrooms != null && property.bathrooms! > 0)
-                        _buildFeatureChip(Iconsax.drop, '${property.bathrooms} Bathrooms'),
+                        _buildFeatureChip(
+                          Iconsax.drop,
+                          '${property.bathrooms} Bathrooms',
+                        ),
                       if (property.toilets != null && property.toilets! > 0)
-                        _buildFeatureChip(Iconsax.house, '${property.toilets} Toilets'),
+                        _buildFeatureChip(
+                          Iconsax.house,
+                          '${property.toilets} Toilets',
+                        ),
                       _buildFeatureChip(Iconsax.ruler, property.displayArea),
                     ],
                   ),
@@ -254,7 +282,10 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     const SizedBox(height: 24),
                     const Text(
                       'Additional Features',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -606,7 +637,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     _launchCall(phone);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Owner phone not available')),
+                      const SnackBar(
+                        content: Text('Owner phone not available'),
+                      ),
                     );
                   }
                 },
@@ -645,7 +678,10 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 const SizedBox(height: 4),
                 Text(
                   provider.owner!.fullName,
-                  style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
               const SizedBox(height: 20),
@@ -677,7 +713,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   ),
                 ),
                 title: const Text('Call Now'),
-                subtitle: Text(hasPhone ? 'Speak directly with owner' : 'Phone not available'),
+                subtitle: Text(
+                  hasPhone
+                      ? 'Speak directly with owner'
+                      : 'Phone not available',
+                ),
                 onTap: hasPhone
                     ? () {
                         Navigator.pop(context);
@@ -700,7 +740,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   ),
                 ),
                 title: const Text('WhatsApp'),
-                subtitle: Text(hasPhone ? 'Chat on WhatsApp' : 'Phone not available'),
+                subtitle: Text(
+                  hasPhone ? 'Chat on WhatsApp' : 'Phone not available',
+                ),
                 onTap: hasPhone
                     ? () {
                         Navigator.pop(context);
