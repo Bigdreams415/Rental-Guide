@@ -557,37 +557,37 @@ class _LoginScreenState extends State<LoginScreen>
                 fontWeight: FontWeight.normal,
               ),
               prefixIcon: Container(
-                margin: const EdgeInsets.all(10),
+                margin: const EdgeInsets.all(9),
                 child: Icon(
                   Iconsax.lock,
                   color: hasFocus ? AppColors.primary : AppColors.grey,
-                  size: 18,
+                  size: 17,
                 ),
               ),
-              suffixIcon: Container(
-                margin: const EdgeInsets.all(4),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                  icon: Icon(
-                    _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
-                    color: AppColors.grey,
-                    size: 18,
-                  ),
-                  splashRadius: 18,
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+                icon: Icon(
+                  _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
+                  color: AppColors.grey,
+                  size: 17,
                 ),
+                padding: EdgeInsets.zero,
+                splashRadius: 16,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                visualDensity: VisualDensity.compact,
               ),
               isDense: true,
               prefixIconConstraints: const BoxConstraints(
-                minWidth: 40,
-                minHeight: 40,
+                minWidth: 36,
+                minHeight: 36,
               ),
               suffixIconConstraints: const BoxConstraints(
-                minWidth: 40,
-                minHeight: 40,
+                minWidth: 36,
+                minHeight: 36,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -602,7 +602,7 @@ class _LoginScreenState extends State<LoginScreen>
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 12,
+                vertical: 10,
                 horizontal: 16,
               ),
             ),
