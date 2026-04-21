@@ -311,6 +311,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 ),
                         ),
                         const SizedBox(height: 24),
+                        _buildPremiumTermsText(),
                       ],
                     ),
                   ),
@@ -1210,6 +1211,23 @@ class _RegisterScreenState extends State<RegisterScreen>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPremiumTermsText() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          'By signing up, you agree to our\nTerms of Service and Privacy Policy',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary.withValues(alpha: 0.6),
+            height: 1.4,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }

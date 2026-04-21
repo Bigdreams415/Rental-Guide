@@ -341,9 +341,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 ),
 
                                 const SizedBox(height: 24),
-
-                                // Terms Text
-                                _buildPremiumTermsText(),
                               ],
                             ),
                           ),
@@ -892,23 +889,6 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPremiumTermsText() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(
-          'By signing in, you agree to our\nTerms of Service and Privacy Policy',
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary.withValues(alpha: 0.6),
-            height: 1.4,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
     );
   }
 }
