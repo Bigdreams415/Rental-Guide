@@ -9,6 +9,7 @@ import '../../../core/api/api_endpoints.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../profile/providers/profile_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nigeria_lg_state_city/const.dart';
 import 'package:nigeria_lg_state_city/nigeria_lg_state_city.dart';
 
@@ -187,6 +188,32 @@ class _RegisterScreenState extends State<RegisterScreen>
           'Something went wrong. Please try again.',
           AppColors.error,
         );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleGoogleRegister() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) {
+        _showSnackBar('Google Sign-Up coming soon!', AppColors.warning);
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _handleAppleRegister() async {
+    setState(() => _isLoading = true);
+
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) {
+        _showSnackBar('Apple Sign-Up coming soon!', AppColors.warning);
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -453,7 +480,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumTextField(
           controller: _emailController,
           focusNode: _emailFocus,
@@ -469,7 +496,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumTextField(
           controller: _phoneController,
           focusNode: _phoneFocus,
@@ -485,7 +512,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumPasswordField(
           controller: _passwordController,
           focusNode: _passwordFocus,
@@ -500,7 +527,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumPasswordField(
           controller: _confirmPasswordController,
           focusNode: _confirmPasswordFocus,
@@ -516,9 +543,13 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 16),
+        _buildPremiumDivider(),
+        const SizedBox(height: 14),
+        _buildPremiumSocialButtons(),
+        const SizedBox(height: 16),
         _buildNextButton(),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildLoginLink(),
       ],
     );
@@ -538,7 +569,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               ? 'Please enter your address'
               : null,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumTextField(
           controller: _cityController,
           focusNode: _cityFocus,
@@ -548,7 +579,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           validator: (v) =>
               (v == null || v.trim().isEmpty) ? 'Please enter your city' : null,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumDropdownLabel('State'),
         NigeriaStateDropdown(
           controller: _locationController,
@@ -557,7 +588,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             Iconsax.map,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 14),
         _buildPremiumDropdownLabel('Local Government Area'),
         NigeriLgDropdown(
           controller: _locationController,
@@ -566,9 +597,9 @@ class _RegisterScreenState extends State<RegisterScreen>
             Iconsax.location_tick,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         _buildTermsCheckbox(),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         _buildAddressNavigationButtons(),
       ],
     );
@@ -588,11 +619,20 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: hasFocus
                 ? [
                     BoxShadow(
@@ -615,44 +655,42 @@ class _RegisterScreenState extends State<RegisterScreen>
             keyboardType: keyboardType,
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              labelText: label,
-              labelStyle: TextStyle(
-                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.auto,
               hintText: hint,
               hintStyle: TextStyle(
                 color: AppColors.grey.withValues(alpha: 0.4),
-                fontSize: 14,
+                fontSize: 13,
               ),
               prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
+                margin: const EdgeInsets.all(10),
                 child: Icon(
                   icon,
                   color: hasFocus ? AppColors.primary : AppColors.grey,
-                  size: 20,
+                  size: 18,
                 ),
               ),
+              isDense: true,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 16,
+                vertical: 12,
                 horizontal: 16,
               ),
             ),
@@ -677,11 +715,20 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: hasFocus
                 ? [
                     BoxShadow(
@@ -704,56 +751,58 @@ class _RegisterScreenState extends State<RegisterScreen>
             obscureText: !isVisible,
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              labelText: label,
-              labelStyle: TextStyle(
-                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.auto,
               hintText: hint,
               hintStyle: TextStyle(
                 color: AppColors.grey.withValues(alpha: 0.4),
-                fontSize: 14,
+                fontSize: 13,
               ),
               prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
+                margin: const EdgeInsets.all(10),
                 child: Icon(
                   Iconsax.lock,
                   color: hasFocus ? AppColors.primary : AppColors.grey,
-                  size: 20,
+                  size: 18,
                 ),
               ),
               suffixIcon: Container(
-                margin: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(4),
                 child: IconButton(
                   onPressed: onToggle,
                   icon: Icon(
                     isVisible ? Iconsax.eye : Iconsax.eye_slash,
                     color: AppColors.grey,
-                    size: 20,
+                    size: 18,
                   ),
-                  splashRadius: 20,
+                  splashRadius: 18,
                 ),
               ),
+              isDense: true,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 16,
+                vertical: 12,
                 horizontal: 16,
               ),
             ),
@@ -783,29 +832,31 @@ class _RegisterScreenState extends State<RegisterScreen>
       hintText: hint,
       hintStyle: TextStyle(
         color: AppColors.grey.withValues(alpha: 0.4),
-        fontSize: 14,
+        fontSize: 13,
       ),
       prefixIcon: Container(
-        margin: const EdgeInsets.all(12),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+        margin: const EdgeInsets.all(10),
+        child: Icon(icon, color: AppColors.primary, size: 18),
       ),
+      isDense: true,
+      prefixIconConstraints: const BoxConstraints(minWidth: 40, minHeight: 40),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
           color: AppColors.greyLight.withValues(alpha: 0.3),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: AppColors.primary, width: 2),
       ),
       filled: true,
       fillColor: AppColors.background,
-      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
     );
   }
 
@@ -874,9 +925,9 @@ class _RegisterScreenState extends State<RegisterScreen>
   Widget _buildNextButton() {
     return Container(
       width: double.infinity,
-      height: 54,
+      height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         gradient: LinearGradient(
           colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
@@ -898,7 +949,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         child: Row(
@@ -906,11 +957,142 @@ class _RegisterScreenState extends State<RegisterScreen>
           children: [
             Text(
               'Continue',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.arrow_forward_rounded, size: 20),
+            Icon(Icons.arrow_forward_rounded, size: 18),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumDivider() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.transparent,
+                  AppColors.greyLight.withValues(alpha: 0.5),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'OR SIGN UP WITH',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.greyLight.withValues(alpha: 0.5),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumSocialButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildSocialButton(
+            onTap: _handleGoogleRegister,
+            label: 'Google',
+            iconPath: 'assets/icons/google.svg',
+            fallbackIcon: Icons.g_mobiledata,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildSocialButton(
+            onTap: _handleAppleRegister,
+            label: 'Apple',
+            fallbackIcon: Icons.apple,
+            isApple: true,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialButton({
+    required VoidCallback onTap,
+    required String label,
+    required IconData fallbackIcon,
+    String? iconPath,
+    bool isApple = false,
+  }) {
+    return Container(
+      height: 46,
+      decoration: BoxDecoration(
+        color: isApple ? AppColors.textPrimary : AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (iconPath != null)
+                SvgPicture.asset(
+                  iconPath,
+                  height: 18,
+                  width: 18,
+                  placeholderBuilder: (context) => Icon(
+                    fallbackIcon,
+                    color: isApple ? Colors.white : AppColors.primary,
+                    size: 18,
+                  ),
+                )
+              else
+                Icon(
+                  fallbackIcon,
+                  color: isApple ? Colors.white : AppColors.primary,
+                  size: 18,
+                ),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isApple ? Colors.white : AppColors.textPrimary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

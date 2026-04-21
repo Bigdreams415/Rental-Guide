@@ -306,32 +306,32 @@ class _LoginScreenState extends State<LoginScreen>
                                         // Email Field
                                         _buildPremiumEmailField(),
 
-                                        const SizedBox(height: 24),
+                                        const SizedBox(height: 16),
 
                                         // Password Field
                                         _buildPremiumPasswordField(),
 
-                                        const SizedBox(height: 20),
+                                        const SizedBox(height: 14),
 
                                         // Remember me & Forgot password
                                         _buildPremiumRememberForgot(),
 
-                                        const SizedBox(height: 32),
+                                        const SizedBox(height: 24),
 
                                         // Sign In Button
                                         _buildPremiumSignInButton(),
 
-                                        const SizedBox(height: 28),
+                                        const SizedBox(height: 20),
 
                                         // Divider
                                         _buildPremiumDivider(),
 
-                                        const SizedBox(height: 28),
+                                        const SizedBox(height: 18),
 
                                         // Social Login Buttons
                                         _buildPremiumSocialButtons(),
 
-                                        const SizedBox(height: 20),
+                                        const SizedBox(height: 16),
 
                                         // Sign Up Link
                                         _buildPremiumSignUpLink(),
@@ -411,11 +411,20 @@ class _LoginScreenState extends State<LoginScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Email Address',
+          style: TextStyle(
+            color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: hasFocus
                 ? [
                     BoxShadow(
@@ -438,45 +447,43 @@ class _LoginScreenState extends State<LoginScreen>
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              labelText: 'Email Address',
-              labelStyle: TextStyle(
-                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.auto,
               hintText: 'Enter your email',
               hintStyle: TextStyle(
                 color: AppColors.grey.withValues(alpha: 0.4),
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.normal,
               ),
               prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
+                margin: const EdgeInsets.all(10),
                 child: Icon(
                   Iconsax.sms,
                   color: hasFocus ? AppColors.primary : AppColors.grey,
-                  size: 22,
+                  size: 18,
                 ),
               ),
+              isDense: true,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 18,
+                vertical: 12,
                 horizontal: 16,
               ),
             ),
@@ -503,11 +510,20 @@ class _LoginScreenState extends State<LoginScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          'Password',
+          style: TextStyle(
+            color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: AppColors.background,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: hasFocus
                 ? [
                     BoxShadow(
@@ -530,33 +546,26 @@ class _LoginScreenState extends State<LoginScreen>
             obscureText: !_isPasswordVisible,
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              labelText: 'Password',
-              labelStyle: TextStyle(
-                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.auto,
               hintText: 'Enter your password',
               hintStyle: TextStyle(
                 color: AppColors.grey.withValues(alpha: 0.4),
-                fontSize: 15,
+                fontSize: 13,
                 fontWeight: FontWeight.normal,
               ),
               prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
+                margin: const EdgeInsets.all(10),
                 child: Icon(
                   Iconsax.lock,
                   color: hasFocus ? AppColors.primary : AppColors.grey,
-                  size: 22,
+                  size: 18,
                 ),
               ),
               suffixIcon: Container(
-                margin: const EdgeInsets.all(8),
+                margin: const EdgeInsets.all(4),
                 child: IconButton(
                   onPressed: () {
                     setState(() {
@@ -566,25 +575,34 @@ class _LoginScreenState extends State<LoginScreen>
                   icon: Icon(
                     _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
                     color: AppColors.grey,
-                    size: 22,
+                    size: 18,
                   ),
-                  splashRadius: 20,
+                  splashRadius: 18,
                 ),
               ),
+              isDense: true,
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
+              suffixIconConstraints: const BoxConstraints(
+                minWidth: 40,
+                minHeight: 40,
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 18,
+                vertical: 12,
                 horizontal: 16,
               ),
             ),
@@ -663,9 +681,9 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildPremiumSignInButton() {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
         gradient: LinearGradient(
           colors: [AppColors.primary, AppColors.primaryDark],
           begin: Alignment.topLeft,
@@ -674,8 +692,8 @@ class _LoginScreenState extends State<LoginScreen>
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -687,7 +705,7 @@ class _LoginScreenState extends State<LoginScreen>
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         child: Row(
@@ -696,13 +714,13 @@ class _LoginScreenState extends State<LoginScreen>
             Text(
               'Sign In',
               style: TextStyle(
-                fontSize: 17,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.arrow_forward_rounded, size: 20),
+            Icon(Icons.arrow_forward_rounded, size: 18),
           ],
         ),
       ),
