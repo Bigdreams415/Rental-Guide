@@ -99,7 +99,7 @@ class GuestProfile extends StatelessWidget {
         ),
         const SizedBox(height: 40),
         Text(
-          'App Version 1.0.0',
+          'App Version 0.0.1',
           style: TextStyle(fontSize: 12, color: AppColors.grey),
         ),
       ],
