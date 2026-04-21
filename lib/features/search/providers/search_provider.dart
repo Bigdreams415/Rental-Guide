@@ -29,6 +29,11 @@ class SearchProvider extends ChangeNotifier {
   // Debounce timer for search input
   Timer? _debounceTimer;
 
+  SearchProvider() {
+    // Perform an initial search to load all properties by default
+    _executeSearch(reset: true);
+  }
+
   // --- Getters ---
   List<Property> get properties => _properties;
   bool get isLoading => _isLoading;
@@ -69,15 +74,6 @@ class SearchProvider extends ChangeNotifier {
   void onSearchChanged(String query) {
     _searchQuery = query;
     _debounceTimer?.cancel();
-    if (query.isEmpty) {
-      // Clear results immediately when search is empty
-      _properties = [];
-      _hasMore = true;
-      _currentPage = 0;
-      _errorMessage = null;
-      notifyListeners();
-      return;
-    }
     _debounceTimer = Timer(const Duration(milliseconds: 400), () {
       _executeSearch(reset: true);
     });
@@ -182,11 +178,7 @@ class SearchProvider extends ChangeNotifier {
     _maxPrice = null;
     _selectedBedrooms = null;
     _sortBy = 'newest';
-    _properties = [];
-    _hasMore = true;
-    _currentPage = 0;
-    _errorMessage = null;
-    notifyListeners();
+    _executeSearch(reset: true);
   }
 
   // --- Internal ---
