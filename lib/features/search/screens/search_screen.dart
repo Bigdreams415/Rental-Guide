@@ -141,77 +141,104 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               Expanded(
                 child: Container(
-                  height: 54,
+                  height: 64,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.greyLight.withValues(alpha: 0.4),
-                    ),
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.grey.withValues(alpha: 0.15),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
                   child: Consumer<SearchProvider>(
                     builder: (_, provider, __) {
-                      return TextField(
-                        controller: _searchController,
-                        focusNode: _searchFocusNode,
-                        textInputAction: TextInputAction.search,
-                        decoration: InputDecoration(
-                          hintText: 'Location, property name...',
-                          hintStyle: TextStyle(
-                            color: AppColors.grey.withValues(alpha: 0.6),
-                            fontSize: 15,
-                          ),
-                          prefixIcon: const Icon(
-                            Iconsax.search_normal,
-                            color: AppColors.grey,
-                            size: 22,
-                          ),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(
-                                    Iconsax.close_circle,
-                                    color: AppColors.grey,
-                                    size: 20,
+                      return Row(
+                        children: [
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              focusNode: _searchFocusNode,
+                              textInputAction: TextInputAction.search,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Location, property name...',
+                                hintStyle: TextStyle(
+                                  color: AppColors.grey.withValues(alpha: 0.8),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(left: 16, right: 12),
+                                  child: Icon(
+                                    Iconsax.search_normal_1,
+                                    color: AppColors.primary,
+                                    size: 24,
                                   ),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    provider.clearAll();
-                                  },
-                                )
-                              : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 40,
+                                  minHeight: 40,
+                                ),
+                                suffixIcon: _searchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(
+                                          Iconsax.close_circle,
+                                          color: AppColors.grey,
+                                          size: 20,
+                                        ),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          provider.clearAll();
+                                          setState(() {});
+                                        },
+                                      )
+                                    : null,
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                              ),
+                              onChanged: (value) {
+                                setState(() {});
+                                provider.onSearchChanged(value);
+                              },
+                              onSubmitted: (_) => provider.search(),
+                            ),
                           ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {});
-                          provider.onSearchChanged(value);
-                        },
-                        onSubmitted: (_) => provider.search(),
+                          Container(
+                            height: 32,
+                            width: 1,
+                            color: AppColors.greyLight.withValues(alpha: 0.5),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8, left: 4),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(24),
+                                onTap: _openAdvancedFilters,
+                                splashColor: AppColors.primary.withValues(alpha: 0.1),
+                                highlightColor: AppColors.primary.withValues(alpha: 0.05),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Icon(
+                                    Iconsax.setting_4,
+                                    color: AppColors.primary,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       );
                     },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {
-                  _searchFocusNode.unfocus();
-                  context.read<SearchProvider>().search();
-                },
-                child: Container(
-                  height: 54,
-                  width: 54,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(
-                    Iconsax.search_normal,
-                    color: Colors.white,
-                    size: 22,
                   ),
                 ),
               ),
