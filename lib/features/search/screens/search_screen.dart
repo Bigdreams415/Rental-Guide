@@ -39,8 +39,16 @@ class _SearchScreenState extends State<SearchScreen> {
     {'label': 'Any', 'min': null, 'max': null},
     {'label': 'Under \u20a65M', 'min': null, 'max': 5000000.0},
     {'label': '\u20a65M \u2013 \u20a610M', 'min': 5000000.0, 'max': 10000000.0},
-    {'label': '\u20a610M \u2013 \u20a620M', 'min': 10000000.0, 'max': 20000000.0},
-    {'label': '\u20a620M \u2013 \u20a650M', 'min': 20000000.0, 'max': 50000000.0},
+    {
+      'label': '\u20a610M \u2013 \u20a620M',
+      'min': 10000000.0,
+      'max': 20000000.0,
+    },
+    {
+      'label': '\u20a620M \u2013 \u20a650M',
+      'min': 20000000.0,
+      'max': 50000000.0,
+    },
     {'label': 'Above \u20a650M', 'min': 50000000.0, 'max': null},
   ];
 
@@ -81,6 +89,15 @@ class _SearchScreenState extends State<SearchScreen> {
     _scrollController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void _openAdvancedFilters() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Advanced filters coming soon'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -176,7 +193,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                   fontWeight: FontWeight.w400,
                                 ),
                                 prefixIcon: Padding(
-                                  padding: const EdgeInsets.only(left: 16, right: 12),
+                                  padding: const EdgeInsets.only(
+                                    left: 16,
+                                    right: 12,
+                                  ),
                                   child: Icon(
                                     Iconsax.search_normal_1,
                                     color: AppColors.primary,
@@ -202,7 +222,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                       )
                                     : null,
                                 border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
                               ),
                               onChanged: (value) {
                                 setState(() {});
@@ -223,8 +245,12 @@ class _SearchScreenState extends State<SearchScreen> {
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(24),
                                 onTap: _openAdvancedFilters,
-                                splashColor: AppColors.primary.withValues(alpha: 0.1),
-                                highlightColor: AppColors.primary.withValues(alpha: 0.05),
+                                splashColor: AppColors.primary.withValues(
+                                  alpha: 0.1,
+                                ),
+                                highlightColor: AppColors.primary.withValues(
+                                  alpha: 0.05,
+                                ),
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   child: Icon(
@@ -439,9 +465,7 @@ class _SearchScreenState extends State<SearchScreen> {
         decoration: BoxDecoration(
           color: AppColors.primary.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.2),
-          ),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
         ),
         child: Text(
           text,
@@ -560,7 +584,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 onTap: () => _showSortSheet(provider),
                 child: Row(
                   children: [
-                    const Icon(Iconsax.sort, size: 16, color: AppColors.primary),
+                    const Icon(
+                      Iconsax.sort,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       _sortLabel(provider.sortBy),
@@ -608,11 +636,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _navigateToDetail(String propertyId) {
-    Navigator.pushNamed(
-      context,
-      '/property-detail',
-      arguments: propertyId,
-    );
+    Navigator.pushNamed(context, '/property-detail', arguments: propertyId);
   }
 
   void _showPropertyTypeSheet(SearchProvider provider) {
@@ -625,7 +649,8 @@ class _SearchScreenState extends State<SearchScreen> {
       onSelected: (label) {
         final match = propertyTypes.firstWhere((e) => e['label'] == label);
         provider.setPropertyType(
-            match['value']!.isEmpty ? null : match['value']);
+          match['value']!.isEmpty ? null : match['value'],
+        );
       },
     );
   }
@@ -640,7 +665,8 @@ class _SearchScreenState extends State<SearchScreen> {
       onSelected: (label) {
         final match = listingTypes.firstWhere((e) => e['label'] == label);
         provider.setListingType(
-            match['value']!.isEmpty ? null : match['value']);
+          match['value']!.isEmpty ? null : match['value'],
+        );
       },
     );
   }
@@ -738,14 +764,20 @@ class _SearchScreenState extends State<SearchScreen> {
                 title: Text(
                   item,
                   style: TextStyle(
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                    color: isSelected
+                        ? AppColors.primary
+                        : AppColors.textPrimary,
                   ),
                 ),
                 trailing: isSelected
-                    ? const Icon(Iconsax.tick_circle,
-                        color: AppColors.primary, size: 22)
+                    ? const Icon(
+                        Iconsax.tick_circle,
+                        color: AppColors.primary,
+                        size: 22,
+                      )
                     : null,
                 onTap: () {
                   Navigator.pop(context);
@@ -760,20 +792,18 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   String _propertyTypeLabel(String value) {
-    return propertyTypes
-            .firstWhere(
-              (e) => e['value'] == value,
-              orElse: () => {'label': value},
-            )['label'] ??
+    return propertyTypes.firstWhere(
+          (e) => e['value'] == value,
+          orElse: () => {'label': value},
+        )['label'] ??
         value;
   }
 
   String _listingTypeLabel(String value) {
-    return listingTypes
-            .firstWhere(
-              (e) => e['value'] == value,
-              orElse: () => {'label': value},
-            )['label'] ??
+    return listingTypes.firstWhere(
+          (e) => e['value'] == value,
+          orElse: () => {'label': value},
+        )['label'] ??
         value;
   }
 
@@ -787,11 +817,10 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   String _sortLabel(String value) {
-    return sortOptions
-            .firstWhere(
-              (e) => e['value'] == value,
-              orElse: () => {'label': value},
-            )['label'] ??
+    return sortOptions.firstWhere(
+          (e) => e['value'] == value,
+          orElse: () => {'label': value},
+        )['label'] ??
         value;
   }
 }
