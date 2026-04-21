@@ -1,3 +1,4 @@
+// register_screen.dart - REDESIGNED VERSION
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -8,9 +9,8 @@ import '../../../core/api/api_endpoints.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../profile/providers/profile_provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nigeria_lg_state_city/nigeria_lg_state_city.dart';
 import 'package:nigeria_lg_state_city/const.dart';
+import 'package:nigeria_lg_state_city/nigeria_lg_state_city.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -21,7 +21,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  // Separate form keys per step so validation is scoped correctly
   final _step1FormKey = GlobalKey<FormState>();
   final _step2FormKey = GlobalKey<FormState>();
 
@@ -32,10 +31,18 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _confirmPasswordController = TextEditingController();
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
-  // controller from the nigeria_lg_state_city package
   final StateLgaCityController _locationController = StateLgaCityController();
 
   final _secureStorage = SecureStorage();
+
+  // Focus nodes
+  final _fullNameFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _phoneFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+  final _confirmPasswordFocus = FocusNode();
+  final _addressFocus = FocusNode();
+  final _cityFocus = FocusNode();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
@@ -45,7 +52,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   int _currentStep = 0;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
@@ -57,11 +63,16 @@ class _RegisterScreenState extends State<RegisterScreen>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
-    _slideAnimation =
-        Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-        );
     _animationController.forward();
+
+    // Add focus listeners
+    _fullNameFocus.addListener(() => setState(() {}));
+    _emailFocus.addListener(() => setState(() {}));
+    _phoneFocus.addListener(() => setState(() {}));
+    _passwordFocus.addListener(() => setState(() {}));
+    _confirmPasswordFocus.addListener(() => setState(() {}));
+    _addressFocus.addListener(() => setState(() {}));
+    _cityFocus.addListener(() => setState(() {}));
   }
 
   @override
@@ -73,15 +84,19 @@ class _RegisterScreenState extends State<RegisterScreen>
     _confirmPasswordController.dispose();
     _addressController.dispose();
     _cityController.dispose();
+    _fullNameFocus.dispose();
+    _emailFocus.dispose();
+    _phoneFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
+    _addressFocus.dispose();
+    _cityFocus.dispose();
     _animationController.dispose();
     _locationController.dispose();
     super.dispose();
   }
 
-  // ── Step navigation ─────────────────────────────────────────────────────────
-
   void _nextStep() {
-    // BUG FIX: validate step 1 before advancing
     if (!_step1FormKey.currentState!.validate()) return;
     setState(() => _currentStep = 1);
   }
@@ -90,13 +105,9 @@ class _RegisterScreenState extends State<RegisterScreen>
     setState(() => _currentStep = 0);
   }
 
-  // ── Registration submit ─────────────────────────────────────────────────────
-
   Future<void> _handleRegister() async {
-    // BUG FIX: validate step 2 form
     if (!_step2FormKey.currentState!.validate()) return;
 
-    // BUG FIX: validate state selection explicitly
     final stateName = _locationController.selectedState?['name']?.trim() ?? '';
     if (stateName.isEmpty) {
       _showSnackBar('Please select your state', AppColors.warning);
@@ -154,7 +165,6 @@ class _RegisterScreenState extends State<RegisterScreen>
         }
       }
     } on ApiException catch (e) {
-      // BUG FIX: use statusCode directly from ApiException
       String message = 'Registration failed. Please try again.';
       if (e.statusCode == 400) {
         final detail = e.message.toLowerCase();
@@ -195,71 +205,86 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  // ── Build ───────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16, top: 8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.shadow,
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 20,
+                color: AppColors.textPrimary,
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+            ),
+          ),
+        ),
+        leadingWidth: 60,
+      ),
       body: _isLoading
           ? const LoadingIndicator()
           : SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: FadeTransition(
                     opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildBackButton(),
-                          const SizedBox(height: 20),
-                          _buildHeader(),
-                          const SizedBox(height: 30),
-                          // Step 1 — Personal info
-                          if (_currentStep == 0)
-                            _buildStepCard(
-                              formKey: _step1FormKey,
-                              child: Column(
-                                children: [
-                                  _buildStepIndicator(),
-                                  const SizedBox(height: 24),
-                                  _buildPersonalInfoStep(),
-                                  const SizedBox(height: 24),
-                                  _buildNextButton(),
-                                  const SizedBox(height: 24),
-                                  _buildDivider(),
-                                  const SizedBox(height: 24),
-                                  _buildGoogleButton(),
-                                  const SizedBox(height: 16),
-                                  _buildLoginLink(),
-                                ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildPremiumHeader(),
+                        const SizedBox(height: 32),
+                        _buildStepIndicator(),
+                        const SizedBox(height: 32),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.08,
+                                ),
+                                blurRadius: 30,
+                                offset: const Offset(0, 10),
+                                spreadRadius: -5,
                               ),
-                            ),
-                          // Step 2 — Address
-                          if (_currentStep == 1)
-                            _buildStepCard(
-                              formKey: _step2FormKey,
-                              child: Column(
-                                children: [
-                                  _buildStepIndicator(),
-                                  const SizedBox(height: 24),
-                                  _buildAddressStep(),
-                                  const SizedBox(height: 24),
-                                  // BUG FIX: show terms checkbox BEFORE button
-                                  // and show clear disabled-state explanation
-                                  _buildTermsCheckbox(),
-                                  const SizedBox(height: 16),
-                                  _buildAddressNavigationButtons(),
-                                ],
-                              ),
-                            ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(28),
+                          child: _currentStep == 0
+                              ? Form(
+                                  key: _step1FormKey,
+                                  child: _buildPersonalInfoStep(),
+                                )
+                              : Form(
+                                  key: _step2FormKey,
+                                  child: _buildAddressStep(),
+                                ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
                   ),
                 ),
@@ -268,84 +293,50 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  Widget _buildStepCard({
-    required GlobalKey<FormState> formKey,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      clipBehavior: Clip.hardEdge,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: -5,
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(24),
-      child: Form(key: formKey, child: child),
-    );
-  }
-
-  Widget _buildBackButton() {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => Navigator.pop(context),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: AppColors.greyLight.withValues(alpha: 0.3),
-            ),
-            boxShadow: [BoxShadow(color: AppColors.shadow, blurRadius: 10)],
-          ),
-          child: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
+  Widget _buildPremiumHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withValues(alpha: 0.1),
+                AppColors.secondary.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Text(
+            'GET STARTED',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.5,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
         Text(
-          'Create Account 🏠',
+          _currentStep == 0 ? 'Create your\naccount' : 'Your location\ndetails',
           style: TextStyle(
-            fontSize: 32,
+            fontSize: 36,
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           _currentStep == 0
-              ? 'Tell us about yourself'
-              : 'Where are you located?',
-          style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          width: 60,
-          height: 4,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
-            ),
-            borderRadius: BorderRadius.circular(2),
+              ? 'Join thousands of property seekers in Nigeria'
+              : 'Help us personalize your property search',
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.textSecondary,
+            height: 1.4,
           ),
         ),
       ],
@@ -353,17 +344,39 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   Widget _buildStepIndicator() {
-    return Row(
-      children: [
-        _buildStepDot(0, 'Personal'),
-        Expanded(
-          child: Container(
-            height: 2,
-            color: _currentStep >= 1 ? AppColors.primary : AppColors.greyLight,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-        ),
-        _buildStepDot(1, 'Address'),
-      ],
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildStepDot(0, 'Personal'),
+          Expanded(
+            child: Container(
+              height: 3,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: _currentStep >= 1
+                      ? [AppColors.primary, AppColors.primaryLight]
+                      : [AppColors.greyLight, AppColors.greyLight],
+                ),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          _buildStepDot(1, 'Address'),
+        ],
+      ),
     );
   }
 
@@ -372,31 +385,48 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Column(
       children: [
         Container(
-          width: 32,
-          height: 32,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? AppColors.primary : AppColors.greyLight,
+            gradient: isActive
+                ? LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isActive ? null : AppColors.greyLight,
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: isActive
-              ? const Icon(Icons.check, size: 18, color: Colors.white)
+              ? const Icon(Icons.check, size: 20, color: Colors.white)
               : Center(
                   child: Text(
                     '${step + 1}',
                     style: TextStyle(
                       color: AppColors.textSecondary,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
           label,
           style: TextStyle(
-            fontSize: 10,
+            fontSize: 12,
             color: isActive ? AppColors.primary : AppColors.textSecondary,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
           ),
         ),
       ],
@@ -407,8 +437,9 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTextField(
+        _buildPremiumTextField(
           controller: _fullNameController,
+          focusNode: _fullNameFocus,
           label: 'Full Name',
           hint: 'Enter your full name',
           icon: Iconsax.user,
@@ -422,9 +453,10 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 16),
-        _buildTextField(
+        const SizedBox(height: 20),
+        _buildPremiumTextField(
           controller: _emailController,
+          focusNode: _emailFocus,
           label: 'Email Address',
           hint: 'Enter your email',
           icon: Iconsax.sms,
@@ -437,29 +469,30 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 16),
-        _buildTextField(
+        const SizedBox(height: 20),
+        _buildPremiumTextField(
           controller: _phoneController,
+          focusNode: _phoneFocus,
           label: 'Phone Number',
           hint: '080XXXXXXXX',
           icon: Iconsax.call,
           keyboardType: TextInputType.phone,
           validator: (v) {
             if (v == null || v.isEmpty) return 'Please enter your phone number';
-            // Match Nigerian numbers: 0801..., 0901..., etc.
             if (!RegExp(r'^0[789][01]\d{8}$').hasMatch(v)) {
-              return 'Enter a valid Nigerian phone number (e.g. 08012345678)';
+              return 'Enter a valid Nigerian number';
             }
             return null;
           },
         ),
-        const SizedBox(height: 16),
-        _buildPasswordField(
+        const SizedBox(height: 20),
+        _buildPremiumPasswordField(
           controller: _passwordController,
+          focusNode: _passwordFocus,
           label: 'Password',
           hint: 'Create a password (min 8 chars)',
           isVisible: _isPasswordVisible,
-          onToggleVisibility: () =>
+          onToggle: () =>
               setState(() => _isPasswordVisible = !_isPasswordVisible),
           validator: (v) {
             if (v == null || v.isEmpty) return 'Please enter a password';
@@ -467,13 +500,14 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
-        const SizedBox(height: 16),
-        _buildPasswordField(
+        const SizedBox(height: 20),
+        _buildPremiumPasswordField(
           controller: _confirmPasswordController,
+          focusNode: _confirmPasswordFocus,
           label: 'Confirm Password',
           hint: 'Re-enter your password',
           isVisible: _isConfirmPasswordVisible,
-          onToggleVisibility: () => setState(
+          onToggle: () => setState(
             () => _isConfirmPasswordVisible = !_isConfirmPasswordVisible,
           ),
           validator: (v) {
@@ -482,6 +516,10 @@ class _RegisterScreenState extends State<RegisterScreen>
             return null;
           },
         ),
+        const SizedBox(height: 28),
+        _buildNextButton(),
+        const SizedBox(height: 20),
+        _buildLoginLink(),
       ],
     );
   }
@@ -490,8 +528,9 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTextField(
+        _buildPremiumTextField(
           controller: _addressController,
+          focusNode: _addressFocus,
           label: 'Street Address',
           hint: 'e.g. 12 Adeola Street',
           icon: Iconsax.location,
@@ -499,35 +538,233 @@ class _RegisterScreenState extends State<RegisterScreen>
               ? 'Please enter your address'
               : null,
         ),
-        const SizedBox(height: 16),
-        _buildTextField(
+        const SizedBox(height: 20),
+        _buildPremiumTextField(
           controller: _cityController,
+          focusNode: _cityFocus,
           label: 'City',
           hint: 'e.g. Lagos',
           icon: Iconsax.building,
           validator: (v) =>
               (v == null || v.trim().isEmpty) ? 'Please enter your city' : null,
         ),
-        const SizedBox(height: 16),
-        _buildDropdownLabel('State'),
+        const SizedBox(height: 20),
+        _buildPremiumDropdownLabel('State'),
         NigeriaStateDropdown(
           controller: _locationController,
-          decoration: _dropdownDecoration('Select your state', Iconsax.map),
+          decoration: _premiumDropdownDecoration(
+            'Select your state',
+            Iconsax.map,
+          ),
         ),
-        const SizedBox(height: 16),
-        _buildDropdownLabel('Local Government Area'),
+        const SizedBox(height: 20),
+        _buildPremiumDropdownLabel('Local Government Area'),
         NigeriLgDropdown(
           controller: _locationController,
-          decoration: _dropdownDecoration(
+          decoration: _premiumDropdownDecoration(
             'Select your LGA',
             Iconsax.location_tick,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildTermsCheckbox(),
+        const SizedBox(height: 24),
+        _buildAddressNavigationButtons(),
+      ],
+    );
+  }
+
+  Widget _buildPremiumTextField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    required String hint,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    final hasFocus = focusNode.hasFocus;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: hasFocus
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+            border: Border.all(
+              color: hasFocus
+                  ? AppColors.primary
+                  : AppColors.greyLight.withValues(alpha: 0.3),
+              width: hasFocus ? 2 : 1,
+            ),
+          ),
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              labelText: label,
+              labelStyle: TextStyle(
+                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.auto,
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: AppColors.grey.withValues(alpha: 0.4),
+                fontSize: 14,
+              ),
+              prefixIcon: Container(
+                margin: const EdgeInsets.all(12),
+                child: Icon(
+                  icon,
+                  color: hasFocus ? AppColors.primary : AppColors.grey,
+                  size: 20,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 16,
+              ),
+            ),
+            validator: validator,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDropdownLabel(String label) {
+  Widget _buildPremiumPasswordField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    required String hint,
+    required bool isVisible,
+    required VoidCallback onToggle,
+    required String? Function(String?)? validator,
+  }) {
+    final hasFocus = focusNode.hasFocus;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: hasFocus
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+            border: Border.all(
+              color: hasFocus
+                  ? AppColors.primary
+                  : AppColors.greyLight.withValues(alpha: 0.3),
+              width: hasFocus ? 2 : 1,
+            ),
+          ),
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            obscureText: !isVisible,
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              labelText: label,
+              labelStyle: TextStyle(
+                color: hasFocus ? AppColors.primary : AppColors.textSecondary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.auto,
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: AppColors.grey.withValues(alpha: 0.4),
+                fontSize: 14,
+              ),
+              prefixIcon: Container(
+                margin: const EdgeInsets.all(12),
+                child: Icon(
+                  Iconsax.lock,
+                  color: hasFocus ? AppColors.primary : AppColors.grey,
+                  size: 20,
+                ),
+              ),
+              suffixIcon: Container(
+                margin: const EdgeInsets.all(8),
+                child: IconButton(
+                  onPressed: onToggle,
+                  icon: Icon(
+                    isVisible ? Iconsax.eye : Iconsax.eye_slash,
+                    color: AppColors.grey,
+                    size: 20,
+                  ),
+                  splashRadius: 20,
+                ),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 16,
+              ),
+            ),
+            validator: validator,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumDropdownLabel(String label) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
       child: Text(
@@ -541,71 +778,222 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  InputDecoration _dropdownDecoration(String hint, IconData icon) {
+  InputDecoration _premiumDropdownDecoration(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: AppColors.grey.withValues(alpha: 0.5)),
+      hintStyle: TextStyle(
+        color: AppColors.grey.withValues(alpha: 0.4),
+        fontSize: 14,
+      ),
       prefixIcon: Container(
         margin: const EdgeInsets.all(12),
         child: Icon(icon, color: AppColors.primary, size: 20),
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
           color: AppColors.greyLight.withValues(alpha: 0.3),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(color: AppColors.primary, width: 2),
       ),
       filled: true,
       fillColor: AppColors.background,
-      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
     );
   }
 
-  // ── BUG FIX: terms shown first, then button ─────────────────────────────────
-
   Widget _buildTermsCheckbox() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Checkbox(
-          value: _agreeToTerms,
-          onChanged: (v) => setState(() => _agreeToTerms = v ?? false),
-          activeColor: AppColors.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          side: BorderSide(color: AppColors.greyLight),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Transform.scale(
+            scale: 0.9,
+            child: Checkbox(
+              value: _agreeToTerms,
+              onChanged: (v) => setState(() => _agreeToTerms = v ?? false),
+              activeColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+              side: BorderSide(color: AppColors.greyLight, width: 1.5),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _agreeToTerms = !_agreeToTerms),
+              child: Text.rich(
+                TextSpan(
+                  text: 'I agree to the ',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Terms of Service',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const TextSpan(text: ' and '),
+                    TextSpan(
+                      text: 'Privacy Policy',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNextButton() {
+    return Container(
+      width: double.infinity,
+      height: 54,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(width: 8),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: _nextStep,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Continue',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.arrow_forward_rounded, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddressNavigationButtons() {
+    return Row(
+      children: [
         Expanded(
-          child: GestureDetector(
-            onTap: () => setState(() => _agreeToTerms = !_agreeToTerms),
-            child: Text.rich(
-              TextSpan(
-                text: 'I agree to the ',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          child: Container(
+            height: 54,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.greyLight.withValues(alpha: 0.3),
+              ),
+            ),
+            child: OutlinedButton(
+              onPressed: _previousStep,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textPrimary,
+                side: BorderSide.none,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextSpan(
-                    text: 'Terms of Service',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Icon(Icons.arrow_back_rounded, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Back',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
-                  const TextSpan(text: ' and '),
-                  TextSpan(
-                    text: 'Privacy Policy',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Container(
+            height: 54,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: _agreeToTerms
+                    ? [AppColors.primary, AppColors.primaryDark]
+                    : [AppColors.grey, AppColors.greyDark],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: _agreeToTerms
+                  ? [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : null,
+            ),
+            child: ElevatedButton(
+              onPressed: _handleRegister,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Create',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(width: 8),
+                  Icon(Icons.check_circle, size: 18),
                 ],
               ),
             ),
@@ -615,272 +1003,26 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  Widget _buildAddressNavigationButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: _previousStep,
-            icon: const Icon(Icons.arrow_back_rounded, size: 18),
-            label: const Text('Back'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              side: BorderSide(color: AppColors.primary),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton.icon(
-            // BUG FIX: button always tappable; terms check happens inside handler
-            // with a clear error message instead of silently disabling
-            onPressed: _handleRegister,
-            icon: const Icon(Icons.check_circle, size: 18),
-            label: const Text(
-              'Create Account',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _agreeToTerms
-                  ? AppColors.primary
-                  : AppColors.grey,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNextButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _nextStep,
-        icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-        label: const Text(
-          'Continue',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: AppColors.grey.withValues(alpha: 0.5)),
-            prefixIcon: Container(
-              margin: const EdgeInsets.all(12),
-              child: Icon(icon, color: AppColors.primary, size: 20),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: AppColors.greyLight.withValues(alpha: 0.3),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: AppColors.error),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          validator: validator,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required bool isVisible,
-    required VoidCallback onToggleVisibility,
-    required String? Function(String?)? validator,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        TextFormField(
-          controller: controller,
-          obscureText: !isVisible,
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 16),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: AppColors.grey.withValues(alpha: 0.5)),
-            prefixIcon: Container(
-              margin: const EdgeInsets.all(12),
-              child: Icon(Iconsax.lock, color: AppColors.primary, size: 20),
-            ),
-            suffixIcon: IconButton(
-              onPressed: onToggleVisibility,
-              icon: Icon(
-                isVisible ? Iconsax.eye : Iconsax.eye_slash,
-                color: AppColors.grey,
-                size: 20,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: AppColors.greyLight.withValues(alpha: 0.3),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: AppColors.error),
-            ),
-            filled: true,
-            fillColor: AppColors.background,
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-          ),
-          validator: validator,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(child: Divider(color: AppColors.greyLight)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'OR',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-          ),
-        ),
-        Expanded(child: Divider(color: AppColors.greyLight)),
-      ],
-    );
-  }
-
-  Widget _buildGoogleButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: OutlinedButton(
-        onPressed: () =>
-            _showSnackBar('Google Sign-Up coming soon!', AppColors.warning),
-        style: OutlinedButton.styleFrom(
-          side: BorderSide(color: AppColors.greyLight),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/icons/google.svg',
-              height: 24,
-              width: 24,
-              placeholderBuilder: (_) =>
-                  Icon(Icons.g_mobiledata, color: AppColors.primary, size: 24),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              'Sign up with Google',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLoginLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           "Already have an account? ",
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 15),
         ),
-        GestureDetector(
-          onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+        TextButton(
+          onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
           child: Text(
             'Sign In',
             style: TextStyle(
               color: AppColors.primary,
-              fontSize: 14,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
           ),
