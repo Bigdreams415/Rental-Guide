@@ -10,6 +10,7 @@ import '../../../constants/colors.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/error_widget.dart';
 import '../../../shared/widgets/property_network_image.dart';
+import '../../inspections/providers/inspection_provider.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final String propertyId;
@@ -614,12 +615,29 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         child: Row(
           children: [
             Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _showScheduleInspection(property),
+                icon: const Icon(Iconsax.calendar, size: 18),
+                label: const Text('Inspect'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 2,
               child: ElevatedButton(
                 onPressed: () => _showContactOptions(property),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -630,7 +648,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.greyLight),
@@ -638,15 +656,12 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  final provider = context.read<PropertyDetailProvider>();
-                  final phone = provider.owner?.phoneNumber;
+                  final phone = property.ownerPhone;
                   if (phone != null && phone.isNotEmpty) {
                     _launchCall(phone);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Owner phone not available'),
-                      ),
+                      const SnackBar(content: Text('Owner phone not available')),
                     );
                   }
                 },
@@ -825,6 +840,237 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       },
     );
   }
+
+  void _showScheduleInspection(Property property) {
+    final provider = context.read<InspectionProvider>();
+    final chatProvider = context.read<ChatProvider>();
+
+    if (chatProvider.currentUser == null) {
+      Navigator.pushNamed(context, '/login');
+      return;
+    }
+
+    if (chatProvider.currentUser!.id == property.ownerId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('You cannot inspect your own property')),
+      );
+      return;
+    }
+
+    DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+    TimeOfDay selectedTime = const TimeOfDay(hour: 10, minute: 0);
+    final noteController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Schedule Inspection',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      property.title,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final picked = await showDatePicker(
+                                context: ctx,
+                                initialDate: selectedDate,
+                                firstDate: DateTime.now().add(const Duration(days: 1)),
+                                lastDate: DateTime.now().add(const Duration(days: 90)),
+                              );
+                              if (picked != null) {
+                                setModalState(() => selectedDate = picked);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.07),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Iconsax.calendar, color: AppColors.primary, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () async {
+                              final picked = await showTimePicker(
+                                context: ctx,
+                                initialTime: selectedTime,
+                              );
+                              if (picked != null) {
+                                setModalState(() => selectedTime = picked);
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.07),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Iconsax.clock, color: AppColors.primary, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    selectedTime.format(ctx),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: noteController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        hintText: 'Add a note (optional)...',
+                        filled: true,
+                        fillColor: AppColors.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.greyLight),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: AppColors.greyLight),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Consumer<InspectionProvider>(
+                        builder: (context, inspProvider, _) {
+                          return ElevatedButton(
+                            onPressed: inspProvider.isSubmitting
+                                ? null
+                                : () async {
+                                    final dateTime = DateTime(
+                                      selectedDate.year,
+                                      selectedDate.month,
+                                      selectedDate.day,
+                                      selectedTime.hour,
+                                      selectedTime.minute,
+                                    );
+
+                                    final ok = await provider.requestInspection(
+                                      propertyId: property.id,
+                                      date: dateTime,
+                                      note: noteController.text.trim(),
+                                    );
+
+                                    if (context.mounted) {
+                                      Navigator.pop(ctx);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            ok
+                                                ? 'Inspection request sent!'
+                                                : provider.errorMessage ?? 'Failed to send request',
+                                          ),
+                                          backgroundColor: ok ? Colors.green : AppColors.error,
+                                        ),
+                                      );
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: inspProvider.isSubmitting
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Send Inspection Request',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+}
 
   IconData _getPropertyIcon(Property property) {
     switch (property.propertyType.toLowerCase()) {

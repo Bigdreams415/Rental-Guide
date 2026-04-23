@@ -538,6 +538,13 @@ class AuthenticatedProfile extends StatelessWidget {
                 ),
                 _buildDividerLine(),
                 _buildMenuItem(
+                  icon: Iconsax.calendar,
+                  title: 'My Inspections',
+                  subtitle: 'View scheduled inspections',
+                  value: 'inspections',
+                ),
+                _buildDividerLine(),
+                _buildMenuItem(
                   icon: Iconsax.document_text,
                   title: 'My Transactions',
                   subtitle: 'View transaction history',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
+import '../../inspections/screens/my_inspections_screen.dart';
 import '../widgets/guest_profile.dart';
 import '../widgets/authenticated_profile.dart';
 import '../../../shared/widgets/loading_indicator.dart';
@@ -88,6 +89,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     switch (value) {
       case 'favorites':
         Navigator.pushNamed(context, '/favorites');
+        break;
+      case 'inspections':
+        final profileProvider = context.read<ProfileProvider>();
+        final user = profileProvider.currentUser;
+        if (user != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MyInspectionsScreen(currentUserId: user.id),
+            ),
+          );
+        }
         break;
       case 'transactions':
         Navigator.pushNamed(context, '/transactions');

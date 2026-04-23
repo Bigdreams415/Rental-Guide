@@ -107,6 +107,7 @@ class Property {
   final List<PropertyImage> images; // ← all uploaded images
   final List<PropertyVideo> videos; // ← video URLs
   final String ownerId;
+  final String? ownerPhone;
   final int viewCount;
   final bool isFeatured;
   final DateTime createdAt;
@@ -138,6 +139,7 @@ class Property {
     required this.images,
     required this.videos,
     required this.ownerId,
+    this.ownerPhone,
     required this.viewCount,
     required this.isFeatured,
     required this.createdAt,
@@ -179,6 +181,7 @@ class Property {
           .map((e) => PropertyVideo.fromJson(e as Map<String, dynamic>))
           .toList(),
       ownerId: json['owner_id'] ?? '',
+      ownerPhone: json['owner_phone'],
       viewCount: json['view_count'] ?? 0,
       isFeatured: json['is_featured'] ?? false,
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
@@ -213,6 +216,7 @@ class Property {
       'features': features,
       'main_image': mainImage,
       'owner_id': ownerId,
+      'owner_phone': ownerPhone,
       'view_count': viewCount,
       'is_featured': isFeatured,
       'created_at': createdAt.toIso8601String(),
