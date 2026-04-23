@@ -21,7 +21,8 @@ void main() async {
 
   await Supabase.initialize(
     url: 'https://kxpdtcyauwfjfxerzxgq.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cGR0Y3lhdXdmamZ4ZXJ6eGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5Mzg4NjEsImV4cCI6MjA5MjUxNDg2MX0.QM6nKTqIXqslnwHWd3XITCkEGGaWDDF-DWOhQIXK2kM',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cGR0Y3lhdXdmamZ4ZXJ6eGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5Mzg4NjEsImV4cCI6MjA5MjUxNDg2MX0.QM6nKTqIXqslnwHWd3XITCkEGGaWDDF-DWOhQIXK2kM',
   );
 
   runApp(const MyApp());
@@ -57,12 +58,12 @@ class MyApp extends StatelessWidget {
             );
           }
           if (settings.name == '/login') {
-            return MaterialPageRoute(
-                builder: (context) => const LoginScreen());
+            return MaterialPageRoute(builder: (context) => const LoginScreen());
           }
           if (settings.name == '/register') {
             return MaterialPageRoute(
-                builder: (context) => const RegisterScreen());
+              builder: (context) => const RegisterScreen(),
+            );
           }
           return null;
         },
@@ -108,10 +109,11 @@ class _MainScaffoldState extends State<MainScaffold> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: 'Post'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add_circle), label: 'Post'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.chat_bubble_outline), label: 'Chats'),
+            icon: Icon(Icons.chat_bubble_outline),
+            label: 'Chats',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

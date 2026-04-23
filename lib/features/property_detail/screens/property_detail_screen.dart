@@ -702,7 +702,21 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 onTap: () async {
                   Navigator.pop(sheetContext); // close bottom sheet first
 
-                  final chatProvider = parentContext.read<ChatProvider>();
+                  ChatProvider chatProvider;
+                  try {
+                    chatProvider = parentContext.read<ChatProvider>();
+                  } catch (_) {
+                    if (!parentContext.mounted) return;
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Chat is initializing. Please restart the app and try again.',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+
                   await chatProvider.init();
                   final conversation =
                       await chatProvider.openOrCreateConversation(
@@ -712,7 +726,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     propertyImage: property.mainImage,
                   );
 
-                  if (!mounted) return;
+                  if (!parentContext.mounted) return;
 
                   if (conversation != null) {
                     Navigator.push(
@@ -726,6 +740,18 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     );
                   } else if (chatProvider.currentUser == null) {
                     Navigator.pushNamed(parentContext, '/login');
+                  } else if (chatProvider.currentUser!.id == property.ownerId) {
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      const SnackBar(
+                        content: Text('You cannot message your own property.'),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(parentContext).showSnackBar(
+                      const SnackBar(
+                        content: Text('Unable to open chat right now.'),
+                      ),
+                    );
                   }
                 },
               ),
