@@ -649,28 +649,20 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.greyLight),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                onPressed: () {
-                  final phone = property.ownerPhone;
-                  if (phone != null && phone.isNotEmpty) {
-                    _launchCall(phone);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Owner phone not available'),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(Iconsax.call),
-                color: AppColors.primary,
-                iconSize: 24,
-              ),
+            IconButton(
+              onPressed: () {
+                final phone = property.ownerPhone;
+                if (phone != null && phone.isNotEmpty) {
+                  _launchCall(phone);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Owner phone not available')),
+                  );
+                }
+              },
+              icon: const Icon(Iconsax.call),
+              color: AppColors.primary,
+              iconSize: 32, // Increased size for alignment
             ),
           ],
         ),
