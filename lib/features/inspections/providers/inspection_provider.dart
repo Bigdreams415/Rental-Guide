@@ -19,9 +19,8 @@ class InspectionProvider extends ChangeNotifier {
       .where((i) => i.isPending || i.isConfirmed || i.isRescheduled)
       .toList();
 
-  List<InspectionModel> get past => _inspections
-      .where((i) => i.isCompleted || i.isCancelled)
-      .toList();
+  List<InspectionModel> get past =>
+      _inspections.where((i) => i.isCompleted || i.isCancelled).toList();
 
   Future<void> loadInspections() async {
     _isLoading = true;

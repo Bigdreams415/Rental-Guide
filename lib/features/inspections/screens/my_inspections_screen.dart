@@ -103,10 +103,15 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
     );
   }
 
-  Widget _buildInspectionCard(InspectionModel inspection, InspectionProvider provider) {
+  Widget _buildInspectionCard(
+    InspectionModel inspection,
+    InspectionProvider provider,
+  ) {
     final isOwner = inspection.ownerId == widget.currentUserId;
     final otherName = isOwner ? inspection.requesterName : inspection.ownerName;
-    final roleLabel = isOwner ? 'Inspection request from' : 'Your inspection with';
+    final roleLabel = isOwner
+        ? 'Inspection request from'
+        : 'Your inspection with';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -317,12 +322,23 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
   Widget _buildStatusBadge(String status) {
     Color color;
     switch (status) {
-      case 'confirmed': color = Colors.green; break;
-      case 'pending': color = Colors.orange; break;
-      case 'rescheduled': color = Colors.blue; break;
-      case 'completed': color = Colors.grey; break;
-      case 'cancelled': color = AppColors.error; break;
-      default: color = AppColors.grey;
+      case 'confirmed':
+        color = Colors.green;
+        break;
+      case 'pending':
+        color = Colors.orange;
+        break;
+      case 'rescheduled':
+        color = Colors.blue;
+        break;
+      case 'completed':
+        color = Colors.grey;
+        break;
+      case 'cancelled':
+        color = AppColors.error;
+        break;
+      default:
+        color = AppColors.grey;
     }
 
     return Container(
@@ -363,11 +379,7 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
               color: AppColors.primary.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Iconsax.calendar,
-              size: 40,
-              color: AppColors.primary,
-            ),
+            child: Icon(Iconsax.calendar, size: 40, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
           Text(
@@ -397,10 +409,12 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
   ) async {
     final ok = await provider.confirmInspection(inspection.id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Inspection confirmed' : 'Failed to confirm'),
-        backgroundColor: ok ? Colors.green : AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok ? 'Inspection confirmed' : 'Failed to confirm'),
+          backgroundColor: ok ? Colors.green : AppColors.error,
+        ),
+      );
     }
   }
 
@@ -410,10 +424,12 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
   ) async {
     final ok = await provider.cancelInspection(inspection.id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Inspection cancelled' : 'Failed to cancel'),
-        backgroundColor: ok ? AppColors.grey : AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok ? 'Inspection cancelled' : 'Failed to cancel'),
+          backgroundColor: ok ? AppColors.grey : AppColors.error,
+        ),
+      );
     }
   }
 
@@ -423,17 +439,29 @@ class _MyInspectionsScreenState extends State<MyInspectionsScreen>
   ) async {
     final ok = await provider.completeInspection(inspection.id);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(ok ? 'Marked as completed' : 'Failed to update'),
-        backgroundColor: ok ? Colors.green : AppColors.error,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ok ? 'Marked as completed' : 'Failed to update'),
+          backgroundColor: ok ? Colors.green : AppColors.error,
+        ),
+      );
     }
   }
 
   String _formatDate(DateTime date) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }

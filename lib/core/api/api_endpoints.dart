@@ -19,14 +19,19 @@ class ApiEndpoints {
   // Favorites
   static const String favorites = '$_base/favorites/';
   static const String favoritesCount = '$_base/favorites/count';
-  static String addFavorite(String propertyId) => '$_base/favorites/$propertyId';
-  static String removeFavorite(String propertyId) => '$_base/favorites/$propertyId';
+  static String addFavorite(String propertyId) =>
+      '$_base/favorites/$propertyId';
+  static String removeFavorite(String propertyId) =>
+      '$_base/favorites/$propertyId';
 
   // Inspections
   static const String requestInspection = '$_base/inspections/';
   static const String myInspections = '$_base/inspections/mine';
-  static String confirmInspection(String id) => '$_base/inspections/$id/confirm';
-  static String rescheduleInspection(String id) => '$_base/inspections/$id/reschedule';
+  static String confirmInspection(String id) =>
+      '$_base/inspections/$id/confirm';
+  static String rescheduleInspection(String id) =>
+      '$_base/inspections/$id/reschedule';
   static String cancelInspection(String id) => '$_base/inspections/$id/cancel';
-  static String completeInspection(String id) => '$_base/inspections/$id/complete';
+  static String completeInspection(String id) =>
+      '$_base/inspections/$id/complete';
 }

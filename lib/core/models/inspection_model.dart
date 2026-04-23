@@ -37,7 +37,8 @@ class InspectionModel {
       propertyId: json['property_id'] ?? '',
       requesterId: json['requester_id'] ?? '',
       ownerId: json['owner_id'] ?? '',
-      requestedDate: DateTime.tryParse(json['requested_date'] ?? '') ?? DateTime.now(),
+      requestedDate:
+          DateTime.tryParse(json['requested_date'] ?? '') ?? DateTime.now(),
       confirmedDate: json['confirmed_date'] != null
           ? DateTime.tryParse(json['confirmed_date'])
           : null,
@@ -62,12 +63,18 @@ class InspectionModel {
 
   String get statusLabel {
     switch (status) {
-      case 'pending': return 'Pending';
-      case 'confirmed': return 'Confirmed';
-      case 'rescheduled': return 'Rescheduled';
-      case 'completed': return 'Completed';
-      case 'cancelled': return 'Cancelled';
-      default: return status;
+      case 'pending':
+        return 'Pending';
+      case 'confirmed':
+        return 'Confirmed';
+      case 'rescheduled':
+        return 'Rescheduled';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return status;
     }
   }
 }

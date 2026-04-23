@@ -661,7 +661,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                     _launchCall(phone);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Owner phone not available')),
+                      const SnackBar(
+                        content: Text('Owner phone not available'),
+                      ),
                     );
                   }
                 },
@@ -907,8 +909,12 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               final picked = await showDatePicker(
                                 context: ctx,
                                 initialDate: selectedDate,
-                                firstDate: DateTime.now().add(const Duration(days: 1)),
-                                lastDate: DateTime.now().add(const Duration(days: 90)),
+                                firstDate: DateTime.now().add(
+                                  const Duration(days: 1),
+                                ),
+                                lastDate: DateTime.now().add(
+                                  const Duration(days: 90),
+                                ),
                               );
                               if (picked != null) {
                                 setModalState(() => selectedDate = picked);
@@ -917,15 +923,23 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.07),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.07,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Iconsax.calendar, color: AppColors.primary, size: 18),
+                                  Icon(
+                                    Iconsax.calendar,
+                                    color: AppColors.primary,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
@@ -954,15 +968,23 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: AppColors.primary.withValues(alpha: 0.07),
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.07,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Iconsax.clock, color: AppColors.primary, size: 18),
+                                  Icon(
+                                    Iconsax.clock,
+                                    color: AppColors.primary,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     selectedTime.format(ctx),
@@ -1021,14 +1043,19 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
                                     if (context.mounted) {
                                       Navigator.pop(ctx);
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
                                           content: Text(
                                             ok
                                                 ? 'Inspection request sent!'
-                                                : provider.errorMessage ?? 'Failed to send request',
+                                                : provider.errorMessage ??
+                                                      'Failed to send request',
                                           ),
-                                          backgroundColor: ok ? Colors.green : AppColors.error,
+                                          backgroundColor: ok
+                                              ? Colors.green
+                                              : AppColors.error,
                                         ),
                                       );
                                     }
@@ -1070,7 +1097,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         );
       },
     );
-}
+  }
 
   IconData _getPropertyIcon(Property property) {
     switch (property.propertyType.toLowerCase()) {
