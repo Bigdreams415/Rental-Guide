@@ -15,6 +15,7 @@ class GuestProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 40),
         Container(
@@ -98,7 +99,7 @@ class GuestProfile extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 40),
-        const Spacer(),
+        const SizedBox(height: 40),
         Text(
           'App Version 0.0.1',
           style: TextStyle(fontSize: 12, color: AppColors.grey),

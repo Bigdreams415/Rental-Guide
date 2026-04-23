@@ -718,13 +718,13 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                   }
 
                   await chatProvider.init();
-                  final conversation =
-                      await chatProvider.openOrCreateConversation(
-                    ownerId: property.ownerId,
-                    propertyId: property.id,
-                    propertyTitle: property.title,
-                    propertyImage: property.mainImage,
-                  );
+                  final conversation = await chatProvider
+                      .openOrCreateConversation(
+                        ownerId: property.ownerId,
+                        propertyId: property.id,
+                        propertyTitle: property.title,
+                        propertyImage: property.mainImage,
+                      );
 
                   if (!parentContext.mounted) return;
 
