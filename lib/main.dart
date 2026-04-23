@@ -25,15 +25,10 @@ void main() async {
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
 
   if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
-    throw Exception(
-      'Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file.',
-    );
+    throw Exception('Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file.');
   }
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
   runApp(const MyApp());
 }
