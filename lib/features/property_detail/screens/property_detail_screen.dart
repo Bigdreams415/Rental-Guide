@@ -264,6 +264,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                           '${property.toilets} Toilets',
                         ),
                       _buildFeatureChip(Iconsax.ruler, property.displayArea),
+                      if (property.isMultiUnit)
+                        _buildFeatureChip(
+                          Icons.layers_outlined,
+                          property.unitsDisplay,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 24),

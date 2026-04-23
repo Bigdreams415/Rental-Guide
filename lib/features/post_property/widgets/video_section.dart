@@ -56,7 +56,7 @@ class _VideoSectionState extends State<VideoSection> {
           style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
         ),
         const SizedBox(height: 16),
-        
+
         // Video URL Input
         Container(
           decoration: BoxDecoration(
@@ -113,7 +113,7 @@ class _VideoSectionState extends State<VideoSection> {
             ),
           ),
         ),
-        
+
         // Error message
         if (_errorMessage != null)
           Padding(
@@ -129,7 +129,7 @@ class _VideoSectionState extends State<VideoSection> {
               ],
             ),
           ),
-        
+
         // Video preview
         if (_videoUrl != null && _errorMessage == null)
           Container(

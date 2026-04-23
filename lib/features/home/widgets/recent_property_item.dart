@@ -21,11 +21,7 @@ class RecentPropertyItem extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 8,
-              spreadRadius: 1,
-            ),
+            BoxShadow(color: AppColors.shadow, blurRadius: 8, spreadRadius: 1),
           ],
         ),
         child: Row(
@@ -150,10 +146,7 @@ class RecentPropertyItem extends StatelessWidget {
                     children: [
                       Text(
                         property.timeAgo,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.grey,
-                        ),
+                        style: TextStyle(fontSize: 11, color: AppColors.grey),
                       ),
                       if (property.verified)
                         Row(
@@ -187,12 +180,16 @@ class RecentPropertyItem extends StatelessWidget {
 
   IconData _getPropertyIcon() {
     switch (property.propertyType.toLowerCase()) {
-      case 'land':       return Iconsax.map;
+      case 'land':
+        return Iconsax.map;
       case 'commercial':
       case 'shop':
-      case 'office':     return Iconsax.building;
-      case 'shortlet':   return Iconsax.house;
-      default:           return Iconsax.home;
+      case 'office':
+        return Iconsax.building;
+      case 'shortlet':
+        return Iconsax.house;
+      default:
+        return Iconsax.home;
     }
   }
 }

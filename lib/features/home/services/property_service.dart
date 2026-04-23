@@ -18,10 +18,7 @@ class PropertyService {
     int limit = 20,
   }) async {
     try {
-      final queryParams = <String, dynamic>{
-        'skip': skip,
-        'limit': limit,
-      };
+      final queryParams = <String, dynamic>{'skip': skip, 'limit': limit};
 
       if (state != null) queryParams['state'] = state;
       if (city != null) queryParams['city'] = city;
@@ -49,9 +46,7 @@ class PropertyService {
   // Get single property by ID
   Future<Property> getPropertyById(String id) async {
     try {
-      final response = await _apiClient.get(
-        ApiEndpoints.propertyDetail(id),
-      );
+      final response = await _apiClient.get(ApiEndpoints.propertyDetail(id));
 
       return Property.fromJson(response);
     } catch (e) {

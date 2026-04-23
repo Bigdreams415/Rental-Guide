@@ -44,6 +44,8 @@ class _PostPropertyScreenState extends State<PostPropertyScreen> {
   final _toiletsController = TextEditingController();
   final _squareMetersController = TextEditingController();
   final _plotSizeController = TextEditingController();
+  final _totalUnitsController = TextEditingController();
+  final _availableUnitsController = TextEditingController();
 
   // Step 3: Features
   final List<String> _selectedFeatures = [];
@@ -129,6 +131,8 @@ class _PostPropertyScreenState extends State<PostPropertyScreen> {
     _toiletsController.dispose();
     _squareMetersController.dispose();
     _plotSizeController.dispose();
+    _totalUnitsController.dispose();
+    _availableUnitsController.dispose();
     _customFeatureController.dispose();
     // image controllers removed; image picker used instead
     super.dispose();
@@ -266,6 +270,8 @@ class _PostPropertyScreenState extends State<PostPropertyScreen> {
         'lga': _locationController.selectedLga?['name'] ?? '',
         'price': _priceController.text.trim(),
         'features': jsonEncode(_selectedFeatures),
+        'total_units': _totalUnitsController.text.trim(),
+        'available_units': _availableUnitsController.text.trim(),
         'verification_document': jsonEncode(_verificationDocumentData),
         'video_url': _videoUrl ?? '',
         'image_captions': jsonEncode(captions),
@@ -372,6 +378,8 @@ class _PostPropertyScreenState extends State<PostPropertyScreen> {
     _toiletsController.clear();
     _squareMetersController.clear();
     _plotSizeController.clear();
+    _totalUnitsController.clear();
+    _availableUnitsController.clear();
     _customFeatureController.clear();
 
     setState(() {
@@ -786,6 +794,39 @@ class _PostPropertyScreenState extends State<PostPropertyScreen> {
               ),
             ],
           ),
+          if (_selectedPropertyType != 'Land') ...[
+            const SizedBox(height: 16),
+            _buildSectionTitle('Units'),
+            const SizedBox(height: 6),
+            Text(
+              'If this listing covers multiple identical units in the same compound or building, specify the total and how many are available.',
+              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    controller: _totalUnitsController,
+                    label: 'Total Units',
+                    hint: 'e.g., 4',
+                    icon: Iconsax.buildings,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildTextField(
+                    controller: _availableUnitsController,
+                    label: 'Available Units',
+                    hint: 'e.g., 3',
+                    icon: Iconsax.building,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 24),
           _buildSectionTitle('Features & Amenities'),
           const SizedBox(height: 12),

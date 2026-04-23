@@ -56,7 +56,7 @@ class AuthenticatedProfile extends StatelessWidget {
         children: [
           // Removed "My Profile" text as requested
           const SizedBox(height: 8),
-          
+
           // Profile info - NO CARD, just clean layout
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,9 +123,9 @@ class AuthenticatedProfile extends StatelessWidget {
                     ),
                 ],
               ),
-              
+
               const SizedBox(width: 16),
-              
+
               // User details
               Expanded(
                 child: Column(
@@ -140,7 +140,7 @@ class AuthenticatedProfile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    
+
                     // Email with icon
                     Row(
                       children: [
@@ -170,9 +170,9 @@ class AuthenticatedProfile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Phone with icon
                     Row(
                       children: [
@@ -202,9 +202,9 @@ class AuthenticatedProfile extends StatelessWidget {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Verification badge if verified
                     if (user.verificationLevel != 'unverified')
                       Container(
@@ -615,7 +615,10 @@ class AuthenticatedProfile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -630,10 +633,7 @@ class AuthenticatedProfile extends StatelessWidget {
   Widget _buildDividerLine() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Divider(
-        height: 1,
-        color: AppColors.greyLight.withOpacity(0.5),
-      ),
+      child: Divider(height: 1, color: AppColors.greyLight.withOpacity(0.5)),
     );
   }
 
@@ -681,9 +681,9 @@ class AuthenticatedProfile extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Logout Button
           Container(
             decoration: BoxDecoration(

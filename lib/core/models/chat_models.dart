@@ -36,7 +36,8 @@ class Conversation {
       participant1Id: json['participant_1_id'] ?? '',
       participant2Id: json['participant_2_id'] ?? '',
       lastMessage: json['last_message'],
-      lastMessageAt: DateTime.tryParse(json['last_message_at'] ?? '') ?? DateTime.now(),
+      lastMessageAt:
+          DateTime.tryParse(json['last_message_at'] ?? '') ?? DateTime.now(),
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }

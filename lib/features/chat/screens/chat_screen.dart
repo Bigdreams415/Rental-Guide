@@ -56,9 +56,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.clear();
 
     await context.read<ChatProvider>().sendMessage(
-          conversationId: widget.conversation.id,
-          content: content,
-        );
+      conversationId: widget.conversation.id,
+      content: content,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
@@ -101,10 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Text(
             'Direct Property',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.grey,
-            ),
+            style: TextStyle(fontSize: 12, color: AppColors.grey),
           ),
         ],
       ),
@@ -178,7 +175,9 @@ class _ChatScreenState extends State<ChatScreen> {
               return _buildEmptyChat();
             }
 
-            WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _scrollToBottom(),
+            );
 
             return ListView.builder(
               controller: _scrollController,
@@ -187,7 +186,8 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (context, index) {
                 final message = messages[index];
                 final isMe = message.senderId == widget.currentUserId;
-                final showDate = index == 0 ||
+                final showDate =
+                    index == 0 ||
                     !_isSameDay(
                       messages[index - 1].createdAt,
                       message.createdAt,
@@ -233,8 +233,9 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         child: Column(
-          crossAxisAlignment:
-              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isMe
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Text(
               message.content,

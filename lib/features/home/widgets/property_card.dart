@@ -20,19 +20,12 @@ class PropertyCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 15,
-              spreadRadius: 1,
-            ),
+            BoxShadow(color: AppColors.shadow, blurRadius: 15, spreadRadius: 1),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildImageSection(),
-            _buildDetailsSection(),
-          ],
+          children: [_buildImageSection(), _buildDetailsSection()],
         ),
       ),
     );
@@ -47,9 +40,7 @@ class PropertyCard extends StatelessWidget {
           PropertyNetworkImage(
             imageUrl: property.bestImage,
             height: 160,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             iconFallback: _getPropertyIcon(),
             fallbackColor: property.typeColor,
           ),
@@ -124,10 +115,7 @@ class PropertyCard extends StatelessWidget {
               bottom: 10,
               right: 10,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(12),
@@ -135,11 +123,7 @@ class PropertyCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Iconsax.gallery,
-                      size: 12,
-                      color: Colors.white,
-                    ),
+                    const Icon(Iconsax.gallery, size: 12, color: Colors.white),
                     const SizedBox(width: 4),
                     Text(
                       '${property.images.length}',
@@ -160,10 +144,7 @@ class PropertyCard extends StatelessWidget {
               bottom: 10,
               left: 10,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.85),
                   borderRadius: BorderRadius.circular(12),
@@ -234,7 +215,9 @@ class PropertyCard extends StatelessWidget {
               children: [
                 _buildSpec(Iconsax.home, property.displayBedrooms),
                 _buildSpec(Iconsax.drop, property.displayBathrooms),
-                Flexible(child: _buildSpec(Iconsax.ruler, property.displayArea)),
+                Flexible(
+                  child: _buildSpec(Iconsax.ruler, property.displayArea),
+                ),
               ],
             ),
           ],
@@ -263,6 +246,41 @@ class PropertyCard extends StatelessWidget {
                       '${property.viewCount} views',
                       style: TextStyle(fontSize: 11, color: AppColors.grey),
                     ),
+                    if (property.isMultiUnit) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple.withValues(alpha: 0.1),
+                          border: Border.all(
+                            color: Colors.deepPurple.withValues(alpha: 0.3),
+                          ),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.layers_outlined,
+                              size: 10,
+                              color: Colors.deepPurple,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              property.unitsDisplay,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.deepPurple,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -312,12 +330,16 @@ class PropertyCard extends StatelessWidget {
 
   IconData _getPropertyIcon() {
     switch (property.propertyType.toLowerCase()) {
-      case 'land':       return Iconsax.map;
+      case 'land':
+        return Iconsax.map;
       case 'commercial':
       case 'shop':
-      case 'office':     return Iconsax.building;
-      case 'shortlet':   return Iconsax.house;
-      default:           return Iconsax.home;
+      case 'office':
+        return Iconsax.building;
+      case 'shortlet':
+        return Iconsax.house;
+      default:
+        return Iconsax.home;
     }
   }
 }

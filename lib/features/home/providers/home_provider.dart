@@ -37,7 +37,7 @@ class HomeProvider extends ChangeNotifier {
 
       _featuredProperties = results[0];
       _recentlyAdded = results[1];
-      
+
       _setLoading(false);
       notifyListeners();
     } catch (e) {

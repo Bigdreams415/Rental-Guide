@@ -7,7 +7,7 @@ import '../../../core/services/property_service.dart';
 class ProfileProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
   final PropertyService _propertyService = PropertyService();
-  
+
   User? _currentUser;
   List<Property> _userProperties = [];
   int _totalViews = 0;
@@ -35,18 +35,21 @@ class ProfileProvider extends ChangeNotifier {
     try {
       // Check if user is logged in
       _currentUser = await _authService.getCurrentUser();
-      
+
       if (_currentUser != null) {
         // Load user's properties
         _userProperties = await _propertyService.getUserProperties();
-        
+
         // Calculate total views
-        _totalViews = _userProperties.fold(0, (sum, property) => sum + property.viewCount);
-        
+        _totalViews = _userProperties.fold(
+          0,
+          (sum, property) => sum + property.viewCount,
+        );
+
         // Load favorites count (you'll implement this)
         _favoritesCount = await _authService.getFavoritesCount();
       }
-      
+
       _setLoading(false);
       notifyListeners();
     } catch (e) {

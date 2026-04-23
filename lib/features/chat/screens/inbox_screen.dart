@@ -63,11 +63,8 @@ class _InboxScreenState extends State<InboxScreen> {
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: conversations.length,
-                  separatorBuilder: (_, __) => const Divider(
-                    height: 1,
-                    indent: 80,
-                    endIndent: 20,
-                  ),
+                  separatorBuilder: (_, __) =>
+                      const Divider(height: 1, indent: 80, endIndent: 20),
                   itemBuilder: (context, index) {
                     return _buildConversationTile(
                       conversations[index],
@@ -83,7 +80,10 @@ class _InboxScreenState extends State<InboxScreen> {
     );
   }
 
-  Widget _buildConversationTile(Conversation conversation, String currentUserId) {
+  Widget _buildConversationTile(
+    Conversation conversation,
+    String currentUserId,
+  ) {
     final isMe = conversation.lastMessage != null;
     final timeStr = _formatTime(conversation.lastMessageAt);
 
@@ -125,10 +125,7 @@ class _InboxScreenState extends State<InboxScreen> {
       ),
       trailing: Text(
         timeStr,
-        style: TextStyle(
-          fontSize: 12,
-          color: AppColors.grey,
-        ),
+        style: TextStyle(fontSize: 12, color: AppColors.grey),
       ),
       onTap: () {
         Navigator.push(

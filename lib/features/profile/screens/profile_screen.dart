@@ -33,9 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Consumer<ProfileProvider>(
             builder: (context, provider, child) {
               if (provider.isLoading) {
-                return const Center(
-                  child: LoadingIndicator(),
-                );
+                return const Center(child: LoadingIndicator());
               }
 
               if (provider.errorMessage != null) {
@@ -109,7 +107,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _showLogoutDialog(BuildContext context, ProfileProvider provider) async {
+  Future<void> _showLogoutDialog(
+    BuildContext context,
+    ProfileProvider provider,
+  ) async {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -126,9 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 provider.logout();
                 Navigator.pop(context);
               },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-              ),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Logout'),
             ),
           ],

@@ -48,9 +48,7 @@ class AuthService {
         final userJson = await _storage.getUser();
         if (userJson != null) {
           try {
-            return User.fromJson(
-              jsonDecode(userJson) as Map<String, dynamic>,
-            );
+            return User.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
           } catch (_) {
             // Corrupted local data — clear it
             await _storage.deleteToken();

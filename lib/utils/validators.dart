@@ -4,7 +4,7 @@ class VideoValidator {
     r'^(https?://)?(www\.)?(youtube\.com|youtu\.be)/',
     caseSensitive: false,
   );
-  
+
   // Vimeo URL patterns
   static final RegExp _vimeoRegex = RegExp(
     r'^(https?://)?(www\.)?vimeo\.com/',

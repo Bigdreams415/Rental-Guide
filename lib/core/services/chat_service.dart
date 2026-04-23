@@ -86,10 +86,13 @@ class ChatService {
         .single();
 
     // Update last_message on the conversation
-    await _client.from('conversations').update({
-      'last_message': content.trim(),
-      'last_message_at': DateTime.now().toIso8601String(),
-    }).eq('id', conversationId);
+    await _client
+        .from('conversations')
+        .update({
+          'last_message': content.trim(),
+          'last_message_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', conversationId);
 
     return Message.fromJson(messageData);
   }
@@ -126,8 +129,9 @@ class ChatService {
         .map((rows) {
           final all = rows.map((e) => Conversation.fromJson(e)).toList();
           return all
-              .where((c) =>
-                  c.participant1Id == userId || c.participant2Id == userId)
+              .where(
+                (c) => c.participant1Id == userId || c.participant2Id == userId,
+              )
               .toList();
         });
   }

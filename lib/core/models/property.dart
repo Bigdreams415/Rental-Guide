@@ -87,7 +87,8 @@ class Property {
   final String propertyType;
   final String listingType;
   final String status;
-  final String verificationStatus; // raw value: "verified", "pending_verification", "rejected"
+  final String
+  verificationStatus; // raw value: "verified", "pending_verification", "rejected"
   final String address;
   final String city;
   final String state;
@@ -99,10 +100,12 @@ class Property {
   final int? toilets;
   final double? squareMeters;
   final String? plotSize;
+  final int? totalUnits;
+  final int? availableUnits;
   final List<String> features;
   final String? mainImage;
-  final List<PropertyImage> images;  // ← all uploaded images
-  final List<PropertyVideo> videos;  // ← video URLs
+  final List<PropertyImage> images; // ← all uploaded images
+  final List<PropertyVideo> videos; // ← video URLs
   final String ownerId;
   final int viewCount;
   final bool isFeatured;
@@ -128,6 +131,8 @@ class Property {
     this.toilets,
     this.squareMeters,
     this.plotSize,
+    this.totalUnits,
+    this.availableUnits,
     required this.features,
     this.mainImage,
     required this.images,
@@ -160,13 +165,16 @@ class Property {
       toilets: json['toilets'],
       squareMeters: json['square_meters']?.toDouble(),
       plotSize: json['plot_size'],
+      totalUnits: json['total_units'],
+      availableUnits: json['available_units'],
       features: List<String>.from(json['features'] ?? []),
       mainImage: json['main_image'],
       // ── NEW: parse images and videos arrays ────────────────────────────────
-      images: (json['images'] as List<dynamic>? ?? [])
-          .map((e) => PropertyImage.fromJson(e as Map<String, dynamic>))
-          .toList()
-        ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder)),
+      images:
+          (json['images'] as List<dynamic>? ?? [])
+              .map((e) => PropertyImage.fromJson(e as Map<String, dynamic>))
+              .toList()
+            ..sort((a, b) => a.displayOrder.compareTo(b.displayOrder)),
       videos: (json['videos'] as List<dynamic>? ?? [])
           .map((e) => PropertyVideo.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -200,6 +208,8 @@ class Property {
       'toilets': toilets,
       'square_meters': squareMeters,
       'plot_size': plotSize,
+      'total_units': totalUnits,
+      'available_units': availableUnits,
       'features': features,
       'main_image': mainImage,
       'owner_id': ownerId,
@@ -224,6 +234,14 @@ class Property {
 
   bool get hasImages => bestImage != null;
   bool get hasVideos => videos.isNotEmpty;
+
+  bool get isMultiUnit => totalUnits != null && totalUnits! > 1;
+
+  String get unitsDisplay {
+    if (!isMultiUnit) return '';
+    final available = availableUnits ?? totalUnits!;
+    return '$available of $totalUnits units available';
+  }
 
   String get formattedPrice {
     const nairaSymbol = '₦';
@@ -270,15 +288,22 @@ class Property {
 
   String get displayType {
     switch (listingType.toLowerCase()) {
-      case 'shortlet': return 'Short Stay';
-      case 'sale':     return 'For Sale';
-      case 'rent':     return 'For Rent';
-      case 'lease':    return 'For Lease';
+      case 'shortlet':
+        return 'Short Stay';
+      case 'sale':
+        return 'For Sale';
+      case 'rent':
+        return 'For Rent';
+      case 'lease':
+        return 'For Lease';
     }
     switch (propertyType.toLowerCase()) {
-      case 'land':       return 'Land';
-      case 'commercial': return 'Commercial';
-      case 'shop':       return 'Shop';
+      case 'land':
+        return 'Land';
+      case 'commercial':
+        return 'Commercial';
+      case 'shop':
+        return 'Shop';
     }
     return listingType;
   }
