@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/home/screens/home_screen.dart';
 import 'features/home/providers/home_provider.dart';
 import 'features/property_detail/screens/property_detail_screen.dart';
@@ -9,11 +10,20 @@ import 'features/search/providers/search_provider.dart';
 import 'features/profile/providers/profile_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
+// import 'features/chat/screens/inbox_screen.dart';
+// import 'features/chat/providers/chat_provider.dart';
 import 'constants/colors.dart';
 import 'features/profile/screens/profile_screen.dart';
 import 'features/post_property/screens/post_property_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://kxpdtcyauwfjfxerzxgq.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cGR0Y3lhdXdmamZ4ZXJ6eGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5Mzg4NjEsImV4cCI6MjA5MjUxNDg2MX0.QM6nKTqIXqslnwHWd3XITCkEGGaWDDF-DWOhQIXK2kM',
+  );
+
   runApp(const MyApp());
 }
 
@@ -28,9 +38,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PropertyDetailProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        // ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: MaterialApp(
-        title: 'Rental Guide',
+        title: 'Direct Property',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
@@ -46,12 +57,12 @@ class MyApp extends StatelessWidget {
             );
           }
           if (settings.name == '/login') {
-            return MaterialPageRoute(builder: (context) => const LoginScreen());
+            return MaterialPageRoute(
+                builder: (context) => const LoginScreen());
           }
           if (settings.name == '/register') {
             return MaterialPageRoute(
-              builder: (context) => const RegisterScreen(),
-            );
+                builder: (context) => const RegisterScreen());
           }
           return null;
         },
@@ -74,6 +85,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     HomeScreen(),
     SearchScreen(),
     PostPropertyScreen(),
+    // InboxScreen(),
     ProfileScreen(),
   ];
 
@@ -96,7 +108,10 @@ class _MainScaffoldState extends State<MainScaffold> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: 'Post'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle), label: 'Post'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_outline), label: 'Chats'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
