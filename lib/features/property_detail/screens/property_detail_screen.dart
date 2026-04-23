@@ -4,6 +4,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/models/property.dart';
 import '../providers/property_detail_provider.dart';
+import '../../chat/providers/chat_provider.dart';
+import '../../chat/screens/chat_screen.dart';
 import '../../../constants/colors.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/error_widget.dart';
@@ -655,6 +657,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   }
 
   void _showContactOptions(Property property) {
+    final parentContext = context;
     final provider = context.read<PropertyDetailProvider>();
     final phone = provider.owner?.phoneNumber;
     final hasPhone = phone != null && phone.isNotEmpty;
@@ -664,7 +667,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) {
+      builder: (sheetContext) {
         return Container(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -696,7 +699,35 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 ),
                 title: const Text('Send Message'),
                 subtitle: const Text('Chat with property owner'),
-                onTap: () => Navigator.pop(context),
+                onTap: () async {
+                  Navigator.pop(sheetContext); // close bottom sheet first
+
+                  final chatProvider = parentContext.read<ChatProvider>();
+                  await chatProvider.init();
+                  final conversation =
+                      await chatProvider.openOrCreateConversation(
+                    ownerId: property.ownerId,
+                    propertyId: property.id,
+                    propertyTitle: property.title,
+                    propertyImage: property.mainImage,
+                  );
+
+                  if (!mounted) return;
+
+                  if (conversation != null) {
+                    Navigator.push(
+                      parentContext,
+                      MaterialPageRoute(
+                        builder: (_) => ChatScreen(
+                          conversation: conversation,
+                          currentUserId: chatProvider.currentUser!.id,
+                        ),
+                      ),
+                    );
+                  } else if (chatProvider.currentUser == null) {
+                    Navigator.pushNamed(parentContext, '/login');
+                  }
+                },
               ),
               ListTile(
                 leading: Container(
@@ -720,7 +751,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 ),
                 onTap: hasPhone
                     ? () {
-                        Navigator.pop(context);
+                        Navigator.pop(sheetContext);
                         _launchCall(phone);
                       }
                     : null,
@@ -745,7 +776,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                 ),
                 onTap: hasPhone
                     ? () {
-                        Navigator.pop(context);
+                        Navigator.pop(sheetContext);
                         _launchWhatsApp(phone, property);
                       }
                     : null,

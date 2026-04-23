@@ -10,8 +10,8 @@ import 'features/search/providers/search_provider.dart';
 import 'features/profile/providers/profile_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
-// import 'features/chat/screens/inbox_screen.dart';
-// import 'features/chat/providers/chat_provider.dart';
+import 'features/chat/screens/inbox_screen.dart';
+import 'features/chat/providers/chat_provider.dart';
 import 'constants/colors.dart';
 import 'features/profile/screens/profile_screen.dart';
 import 'features/post_property/screens/post_property_screen.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PropertyDetailProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
-        // ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: MaterialApp(
         title: 'Direct Property',
@@ -85,7 +85,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     HomeScreen(),
     SearchScreen(),
     PostPropertyScreen(),
-    // InboxScreen(),
+    InboxScreen(),
     ProfileScreen(),
   ];
 
