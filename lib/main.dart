@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/home/screens/home_screen.dart';
@@ -19,10 +20,19 @@ import 'features/post_property/screens/post_property_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load(fileName: '.env');
+  final supabaseUrl = dotenv.env['SUPABASE_URL'] ?? '';
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    throw Exception(
+      'Missing SUPABASE_URL or SUPABASE_ANON_KEY in .env file.',
+    );
+  }
+
   await Supabase.initialize(
-    url: 'https://kxpdtcyauwfjfxerzxgq.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4cGR0Y3lhdXdmamZ4ZXJ6eGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5Mzg4NjEsImV4cCI6MjA5MjUxNDg2MX0.QM6nKTqIXqslnwHWd3XITCkEGGaWDDF-DWOhQIXK2kM',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   runApp(const MyApp());
