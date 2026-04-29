@@ -10,6 +10,7 @@ import '../../../constants/colors.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/error_widget.dart';
 import '../../../shared/widgets/property_network_image.dart';
+import '../../../core/services/auth_service.dart';
 import '../../inspections/providers/inspection_provider.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
@@ -23,14 +24,81 @@ class PropertyDetailScreen extends StatefulWidget {
 
 class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   int _currentImageIndex = 0;
+  bool _isFavorited = false;
+  bool _isTogglingFavorite = false;
   final PageController _imagePageController = PageController();
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<PropertyDetailProvider>().loadProperty(widget.propertyId);
+      _checkFavoriteStatus();
     });
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    final isFav = await _authService.checkFavorite(widget.propertyId);
+    if (mounted) {
+      setState(() => _isFavorited = isFav);
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    if (_isTogglingFavorite) return;
+    setState(() => _isTogglingFavorite = true);
+
+    try {
+      if (_isFavorited) {
+        await _authService.removeFavorite(widget.propertyId);
+        if (mounted) {
+          setState(() => _isFavorited = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Removed from favorites'),
+              backgroundColor: AppColors.grey,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      } else {
+        await _authService.addFavorite(widget.propertyId);
+        if (mounted) {
+          setState(() => _isFavorited = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Iconsax.heart, color: Colors.white, size: 18),
+                  SizedBox(width: 8),
+                  Text('Added to favorites'),
+                ],
+              ),
+              backgroundColor: AppColors.primary,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isTogglingFavorite = false);
+    }
   }
 
   @override
@@ -136,17 +204,19 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
               IconButton(
                 icon: Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.black54,
+                  decoration: BoxDecoration(
+                    color: _isFavorited
+                        ? AppColors.error.withValues(alpha: 0.8)
+                        : Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Iconsax.heart,
-                    color: Colors.white,
+                  child: Icon(
+                    _isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                    color: _isFavorited ? Colors.white : Colors.white,
                     size: 20,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: _isTogglingFavorite ? null : _toggleFavorite,
               ),
               IconButton(
                 icon: Container(

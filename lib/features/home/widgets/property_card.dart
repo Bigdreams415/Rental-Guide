@@ -7,8 +7,16 @@ import '../../../shared/widgets/property_network_image.dart';
 class PropertyCard extends StatelessWidget {
   final Property property;
   final VoidCallback? onTap;
+  final VoidCallback? onFavoriteTap;
+  final bool isFavorited;
 
-  const PropertyCard({super.key, required this.property, this.onTap});
+  const PropertyCard({
+    super.key,
+    required this.property,
+    this.onTap,
+    this.onFavoriteTap,
+    this.isFavorited = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +116,27 @@ class PropertyCard extends StatelessWidget {
                 ),
               ),
             ),
+
+          // ── Favorite button (top-right or below verified) ─────────────────
+          Positioned(
+            top: property.verified ? 48 : 12,
+            right: 12,
+            child: GestureDetector(
+              onTap: onFavoriteTap,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                  color: isFavorited ? AppColors.error : Colors.white,
+                  size: 16,
+                ),
+              ),
+            ),
+          ),
 
           // ── Image count badge (bottom-right) if multiple images ───────────
           if (property.images.length > 1)

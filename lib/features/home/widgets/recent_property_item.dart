@@ -7,8 +7,16 @@ import '../../../shared/widgets/property_network_image.dart';
 class RecentPropertyItem extends StatelessWidget {
   final Property property;
   final VoidCallback? onTap;
+  final VoidCallback? onFavoriteTap;
+  final bool isFavorited;
 
-  const RecentPropertyItem({super.key, required this.property, this.onTap});
+  const RecentPropertyItem({
+    super.key,
+    required this.property,
+    this.onTap,
+    this.onFavoriteTap,
+    this.isFavorited = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +148,7 @@ class RecentPropertyItem extends StatelessWidget {
 
                   const SizedBox(height: 4),
 
-                  // Time ago + verified
+                  // Time ago + verified + favorite
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -148,25 +156,40 @@ class RecentPropertyItem extends StatelessWidget {
                         property.timeAgo,
                         style: TextStyle(fontSize: 11, color: AppColors.grey),
                       ),
-                      if (property.verified)
-                        Row(
-                          children: [
-                            const Icon(
-                              Iconsax.tick_circle,
-                              size: 13,
-                              color: Colors.green,
+                      Row(
+                        children: [
+                          if (property.verified)
+                            Row(
+                              children: [
+                                const Icon(
+                                  Iconsax.tick_circle,
+                                  size: 13,
+                                  color: Colors.green,
+                                ),
+                                const SizedBox(width: 3),
+                                const Text(
+                                  'Verified',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
                             ),
-                            const SizedBox(width: 3),
-                            const Text(
-                              'Verified',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          GestureDetector(
+                            onTap: onFavoriteTap,
+                            child: Icon(
+                              isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                              size: 18,
+                              color: isFavorited
+                                  ? AppColors.error
+                                  : AppColors.grey,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ],

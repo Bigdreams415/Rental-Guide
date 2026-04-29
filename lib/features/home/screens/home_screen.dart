@@ -11,6 +11,7 @@ import '../../../constants/colors.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../../shared/widgets/error_widget.dart';
 import '../../../core/models/property.dart';
+import '../../../core/services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,14 +32,67 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int selectedTypeIndex = 0;
   final TextEditingController _searchController = TextEditingController();
+  final AuthService _authService = AuthService();
+  final Set<String> _favoritedIds = {};
 
   @override
   void initState() {
     super.initState();
-    // Load data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeProvider>().loadHomeData();
     });
+  }
+
+  Future<void> _toggleFavorite(Property property) async {
+    final isFav = _favoritedIds.contains(property.id);
+    try {
+      if (isFav) {
+        await _authService.removeFavorite(property.id);
+        setState(() => _favoritedIds.remove(property.id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Removed from favorites'),
+              backgroundColor: AppColors.grey,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      } else {
+        await _authService.addFavorite(property.id);
+        setState(() => _favoritedIds.add(property.id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Iconsax.heart, color: Colors.white, size: 18),
+                  SizedBox(width: 8),
+                  Text('Added to favorites'),
+                ],
+              ),
+              backgroundColor: AppColors.primary,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -241,6 +295,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     property: properties[index],
                     onTap: () =>
                         _navigateToPropertyDetail(properties[index].id),
+                    onFavoriteTap: () =>
+                        _toggleFavorite(properties[index]),
+                    isFavorited:
+                        _favoritedIds.contains(properties[index].id),
                   ),
                 );
               },
@@ -291,6 +349,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   (property) => RecentPropertyItem(
                     property: property,
                     onTap: () => _navigateToPropertyDetail(property.id),
+                    onFavoriteTap: () => _toggleFavorite(property),
+                    isFavorited: _favoritedIds.contains(property.id),
                   ),
                 )
                 .toList(),

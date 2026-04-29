@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import '../../../constants/colors.dart';
+import '../../../core/services/auth_service.dart';
 import '../providers/search_provider.dart';
 import '../widgets/search_property_card.dart';
 
@@ -16,6 +17,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _searchFocusNode = FocusNode();
+  final AuthService _authService = AuthService();
+  final Set<String> _favoritedIds = {};
 
   static const List<Map<String, String>> propertyTypes = [
     {'label': 'All', 'value': ''},
@@ -74,6 +77,58 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _toggleFavorite(property) async {
+    final isFav = _favoritedIds.contains(property.id);
+    try {
+      if (isFav) {
+        await _authService.removeFavorite(property.id);
+        setState(() => _favoritedIds.remove(property.id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Removed from favorites'),
+              backgroundColor: AppColors.grey,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      } else {
+        await _authService.addFavorite(property.id);
+        setState(() => _favoritedIds.add(property.id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Iconsax.heart, color: Colors.white, size: 18),
+                  SizedBox(width: 8),
+                  Text('Added to favorites'),
+                ],
+              ),
+              backgroundColor: AppColors.primary,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 2),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Something went wrong. Please try again.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
   }
 
   void _onScroll() {
@@ -627,6 +682,8 @@ class _SearchScreenState extends State<SearchScreen> {
               return SearchPropertyCard(
                 property: property,
                 onTap: () => _navigateToDetail(property.id),
+                onFavoriteTap: () => _toggleFavorite(property),
+                isFavorited: _favoritedIds.contains(property.id),
               );
             },
           ),

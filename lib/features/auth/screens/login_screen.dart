@@ -9,7 +9,6 @@ import '../../../core/api/api_endpoints.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../profile/providers/profile_provider.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -827,28 +826,23 @@ class _LoginScreenState extends State<LoginScreen>
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  icon,
-                  height: 22,
-                  width: 22,
-                  placeholderBuilder: (context) => Icon(
-                    fallbackIcon,
-                    color: isApple ? Colors.white : AppColors.primary,
-                    size: 22,
-                  ),
+                Icon(
+                  fallbackIcon,
+                  color: isApple ? Colors.white : AppColors.error,
+                  size: 22,
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 6),
                 Flexible(
                   child: Text(
                     label,
                     style: TextStyle(
                       color: isApple ? Colors.white : AppColors.textPrimary,
-                      fontSize: 15,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,

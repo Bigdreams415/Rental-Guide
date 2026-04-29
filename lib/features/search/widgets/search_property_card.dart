@@ -8,8 +8,16 @@ import '../../../shared/widgets/property_network_image.dart';
 class SearchPropertyCard extends StatelessWidget {
   final Property property;
   final VoidCallback? onTap;
+  final VoidCallback? onFavoriteTap;
+  final bool isFavorited;
 
-  const SearchPropertyCard({super.key, required this.property, this.onTap});
+  const SearchPropertyCard({
+    super.key,
+    required this.property,
+    this.onTap,
+    this.onFavoriteTap,
+    this.isFavorited = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -88,16 +96,19 @@ class SearchPropertyCard extends StatelessWidget {
           Positioned(
             top: 8,
             right: 8,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.black45,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(Iconsax.heart, size: 20, color: Colors.white),
+            child: GestureDetector(
+              onTap: onFavoriteTap,
+              child: Container(
                 padding: const EdgeInsets.all(8),
-                constraints: const BoxConstraints(),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.45),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                  size: 18,
+                  color: isFavorited ? Colors.red : Colors.white,
+                ),
               ),
             ),
           ),

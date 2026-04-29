@@ -135,9 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         content: const Text(
-          'This is the total number of times people have viewed all '
-          'the properties you have listed. More views means your '
-          'properties are getting more attention from potential buyers or tenants.',
+          'Total views across all your listed properties. '
+          'Each view means someone interacted with your listing.',
           style: TextStyle(fontSize: 15, height: 1.5),
         ),
         actions: [
