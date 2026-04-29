@@ -77,14 +77,40 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadFavoritesFromServer());
+  }
+
+  Future<void> _loadFavoritesFromServer() async {
+    try {
+      final response = await _authService.getFavorites(limit: 200);
+      final favorites = List<Map<String, dynamic>>.from(response['favorites'] ?? []);
+      if (mounted) {
+        setState(() {
+          _favoritedIds.clear();
+          for (final f in favorites) {
+            _favoritedIds.add(f['property_id']?.toString() ?? '');
+          }
+        });
+      }
+    } catch (_) {}
   }
 
   Future<void> _toggleFavorite(property) async {
-    final isFav = _favoritedIds.contains(property.id);
+    final propertyId = property.id;
+    final isFav = _favoritedIds.contains(propertyId);
+
+    // Optimistic update — update UI immediately
+    setState(() {
+      if (isFav) {
+        _favoritedIds.remove(propertyId);
+      } else {
+        _favoritedIds.add(propertyId);
+      }
+    });
+
     try {
       if (isFav) {
-        await _authService.removeFavorite(property.id);
-        setState(() => _favoritedIds.remove(property.id));
+        await _authService.removeFavorite(propertyId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -98,8 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
           );
         }
       } else {
-        await _authService.addFavorite(property.id);
-        setState(() => _favoritedIds.add(property.id));
+        await _authService.addFavorite(propertyId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -120,6 +145,14 @@ class _SearchScreenState extends State<SearchScreen> {
         }
       }
     } catch (_) {
+      // Revert optimistic update on failure
+      setState(() {
+        if (isFav) {
+          _favoritedIds.add(propertyId);
+        } else {
+          _favoritedIds.remove(propertyId);
+        }
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

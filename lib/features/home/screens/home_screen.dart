@@ -38,17 +38,46 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeProvider>().loadHomeData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<HomeProvider>().loadHomeData();
+      _loadFavoritesFromServer();
     });
   }
 
+  /// Load all favorited property IDs from the backend so the UI is persistent.
+  Future<void> _loadFavoritesFromServer() async {
+    try {
+      final response = await _authService.getFavorites(limit: 200);
+      final favorites = List<Map<String, dynamic>>.from(response['favorites'] ?? []);
+      if (mounted) {
+        setState(() {
+          _favoritedIds.clear();
+          for (final f in favorites) {
+            _favoritedIds.add(f['property_id']?.toString() ?? '');
+          }
+        });
+      }
+    } catch (_) {
+      // Silently fail — the server might be unreachable
+    }
+  }
+
   Future<void> _toggleFavorite(Property property) async {
-    final isFav = _favoritedIds.contains(property.id);
+    final propertyId = property.id;
+    final isFav = _favoritedIds.contains(propertyId);
+
+    // Optimistic update — update UI immediately
+    setState(() {
+      if (isFav) {
+        _favoritedIds.remove(propertyId);
+      } else {
+        _favoritedIds.add(propertyId);
+      }
+    });
+
     try {
       if (isFav) {
-        await _authService.removeFavorite(property.id);
-        setState(() => _favoritedIds.remove(property.id));
+        await _authService.removeFavorite(propertyId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -62,8 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
       } else {
-        await _authService.addFavorite(property.id);
-        setState(() => _favoritedIds.add(property.id));
+        await _authService.addFavorite(propertyId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -84,6 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     } catch (_) {
+      // Revert optimistic update on failure
+      setState(() {
+        if (isFav) {
+          _favoritedIds.add(propertyId);
+        } else {
+          _favoritedIds.remove(propertyId);
+        }
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

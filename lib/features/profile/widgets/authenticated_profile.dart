@@ -40,8 +40,6 @@ class AuthenticatedProfile extends StatelessWidget {
         const SizedBox(height: 16),
         _buildStatsSection(),
         const SizedBox(height: 24),
-        _buildMyListings(),
-        const SizedBox(height: 24),
         _buildMenuOptions(),
         const SizedBox(height: 24),
         _buildAccountActions(),
@@ -358,179 +356,6 @@ class AuthenticatedProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildMyListings() {
-    if (properties.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'My Properties',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              if (properties.length > 3)
-                TextButton(
-                  onPressed: onListingsTap,
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                  ),
-                  child: Row(
-                    children: [
-                      Text('See All'),
-                      const SizedBox(width: 4),
-                      Icon(Iconsax.arrow_right_3, size: 16),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...properties
-              .take(3)
-              .map(
-                (property) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildPropertyListItem(property),
-                ),
-              ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPropertyListItem(Property property) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppColors.primary.withOpacity(0.1),
-            ),
-            child: Icon(Iconsax.building_3, size: 30, color: AppColors.primary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        property.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: property.status == 'available'
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.orange.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        property.status,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: property.status == 'available'
-                              ? Colors.green
-                              : Colors.orange,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(Iconsax.location, size: 14, color: AppColors.grey),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        '${property.city}, ${property.state}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      property.formattedPrice,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Icon(Iconsax.eye, size: 14, color: AppColors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${property.viewCount} views',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildMenuOptions() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -563,11 +388,18 @@ class AuthenticatedProfile extends StatelessWidget {
             child: Column(
               children: [
                 _buildMenuItem(
+                  icon: Iconsax.building_3,
+                  title: 'My Properties',
+                  subtitle: '${properties.length} listed propert${properties.length == 1 ? 'y' : 'ies'}',
+                  value: 'my_properties',
+                  isFirst: true,
+                ),
+                _buildDividerLine(),
+                _buildMenuItem(
                   icon: Iconsax.heart,
                   title: 'Favorite Properties',
                   subtitle: '$favoritesCount saved properties',
                   value: 'favorites',
-                  isFirst: true,
                 ),
                 _buildDividerLine(),
                 _buildMenuItem(
