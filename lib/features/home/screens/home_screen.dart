@@ -40,14 +40,14 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<HomeProvider>().loadHomeData();
-      _loadFavoritesFromServer();
+      await _loadFavoritesFromServer();
     });
   }
 
   /// Load all favorited property IDs from the backend so the UI is persistent.
   Future<void> _loadFavoritesFromServer() async {
     try {
-      final response = await _authService.getFavorites(limit: 200);
+      final response = await _authService.getFavorites(limit: 50);
       final favorites = List<Map<String, dynamic>>.from(response['favorites'] ?? []);
       if (mounted) {
         setState(() {

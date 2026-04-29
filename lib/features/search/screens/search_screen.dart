@@ -82,7 +82,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<void> _loadFavoritesFromServer() async {
     try {
-      final response = await _authService.getFavorites(limit: 200);
+      final response = await _authService.getFavorites(limit: 50);
       final favorites = List<Map<String, dynamic>>.from(response['favorites'] ?? []);
       if (mounted) {
         setState(() {

@@ -119,20 +119,22 @@ class PropertyCard extends StatelessWidget {
 
           // ── Favorite button (top-right or below verified) ─────────────────
           Positioned(
-            top: property.verified ? 48 : 12,
-            right: 12,
+            top: property.verified ? 46 : 10,
+            right: 10,
             child: GestureDetector(
               onTap: onFavoriteTap,
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.45),
+                  color: isFavorited
+                      ? AppColors.error.withValues(alpha: 0.85)
+                      : Colors.black.withValues(alpha: 0.45),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isFavorited ? Iconsax.heart5 : Iconsax.heart,
-                  color: isFavorited ? AppColors.error : Colors.white,
-                  size: 16,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),

@@ -180,12 +180,19 @@ class RecentPropertyItem extends StatelessWidget {
                             ),
                           GestureDetector(
                             onTap: onFavoriteTap,
-                            child: Icon(
-                              isFavorited ? Iconsax.heart5 : Iconsax.heart,
-                              size: 18,
-                              color: isFavorited
-                                  ? AppColors.error
-                                  : AppColors.grey,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isFavorited
+                                    ? AppColors.error.withValues(alpha: 0.85)
+                                    : Colors.black.withValues(alpha: 0.45),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isFavorited ? Iconsax.heart5 : Iconsax.heart,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ],
