@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:iconsax/iconsax.dart';
 import '../providers/profile_provider.dart';
 import '../../inspections/screens/my_inspections_screen.dart';
+import '../../favorites/screens/favorites_screen.dart';
+import '../../listings/screens/my_listings_screen.dart';
 import '../widgets/guest_profile.dart';
 import '../widgets/authenticated_profile.dart';
 import '../../../shared/widgets/loading_indicator.dart';
@@ -63,7 +66,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   favoritesCount: provider.favoritesCount,
                   onEditProfile: () => _navigateToEditProfile(context),
                   onLogout: () => _showLogoutDialog(context, provider),
-                  onMenuItemTap: (value) => _handleMenuItemTap(context, value),
+                  onDeleteAccount: () =>
+                      _showDeleteAccountDialog(context, provider),
+                  onListingsTap: () => _navigateToMyListings(context, provider),
+                  onTotalViewsTap: () => _showTotalViewsInfo(context),
+                  onFavoritesTap: () => _navigateToFavorites(context, provider),
+                  onMenuItemTap: (value) =>
+                      _handleMenuItemTap(context, value),
                 ),
               );
             },
@@ -85,14 +94,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushNamed(context, '/edit-profile');
   }
 
-  void _handleMenuItemTap(BuildContext context, String value) {
+  Future<void> _navigateToMyListings(
+      BuildContext context, ProfileProvider provider) async {
+    final user = provider.currentUser;
+    if (user != null) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MyListingsScreen(userId: user.id),
+        ),
+      );
+      provider.refreshProfile();
+    }
+  }
+
+  Future<void> _navigateToFavorites(
+      BuildContext context, ProfileProvider provider) async {
+    final user = provider.currentUser;
+    if (user != null) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => FavoritesScreen(userId: user.id),
+        ),
+      );
+      provider.refreshFavoritesCount();
+    }
+  }
+
+  void _showTotalViewsInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Iconsax.eye, color: Color(0xFF0066B2), size: 24),
+            SizedBox(width: 10),
+            Text('Total Views'),
+          ],
+        ),
+        content: const Text(
+          'This is the total number of times people have viewed all '
+          'the properties you have listed. More views means your '
+          'properties are getting more attention from potential buyers or tenants.',
+          style: TextStyle(fontSize: 15, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleMenuItemTap(BuildContext context, String value) async {
+    final profileProvider = context.read<ProfileProvider>();
+    final user = profileProvider.currentUser;
+
     switch (value) {
       case 'favorites':
-        Navigator.pushNamed(context, '/favorites');
+        if (user != null) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => FavoritesScreen(userId: user.id),
+            ),
+          );
+          profileProvider.refreshFavoritesCount();
+        }
         break;
       case 'inspections':
-        final profileProvider = context.read<ProfileProvider>();
-        final user = profileProvider.currentUser;
         if (user != null) {
           Navigator.push(
             context,
@@ -115,7 +189,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Navigator.pushNamed(context, '/support');
         break;
       case 'my_properties':
-        Navigator.pushNamed(context, '/my-properties');
+        if (user != null) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MyListingsScreen(userId: user.id),
+            ),
+          );
+          profileProvider.refreshProfile();
+        }
         break;
     }
   }
@@ -142,6 +224,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteAccountDialog(
+    BuildContext context,
+    ProfileProvider provider,
+  ) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Iconsax.warning_2, color: Colors.red, size: 24),
+              SizedBox(width: 10),
+              Text('Delete Account'),
+            ],
+          ),
+          content: const Text(
+            'This feature is not available yet. '
+            'Account deletion will be available in a future update.',
+            style: TextStyle(fontSize: 15, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
             ),
           ],
         );

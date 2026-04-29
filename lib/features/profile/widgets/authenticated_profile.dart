@@ -11,6 +11,10 @@ class AuthenticatedProfile extends StatelessWidget {
   final int favoritesCount;
   final VoidCallback onEditProfile;
   final VoidCallback onLogout;
+  final VoidCallback onDeleteAccount;
+  final VoidCallback onListingsTap;
+  final VoidCallback onTotalViewsTap;
+  final VoidCallback onFavoritesTap;
   final Function(String) onMenuItemTap;
 
   const AuthenticatedProfile({
@@ -21,6 +25,10 @@ class AuthenticatedProfile extends StatelessWidget {
     required this.favoritesCount,
     required this.onEditProfile,
     required this.onLogout,
+    required this.onDeleteAccount,
+    required this.onListingsTap,
+    required this.onTotalViewsTap,
+    required this.onFavoritesTap,
     required this.onMenuItemTap,
   });
 
@@ -54,10 +62,9 @@ class AuthenticatedProfile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Removed "My Profile" text as requested
           const SizedBox(height: 8),
 
-          // Profile info - NO CARD, just clean layout
+          // Profile info with edit button at top right
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -239,6 +246,24 @@ class AuthenticatedProfile extends StatelessWidget {
                   ],
                 ),
               ),
+
+              // Edit button at top-right of profile header
+              InkWell(
+                onTap: onEditProfile,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Iconsax.edit,
+                    size: 20,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
             ],
           ),
         ],
@@ -281,18 +306,21 @@ class AuthenticatedProfile extends StatelessWidget {
             value: properties.length.toString(),
             label: 'My Listings',
             icon: Iconsax.home,
+            onTap: onListingsTap,
           ),
           Container(height: 40, width: 1, color: AppColors.greyLight),
           _buildStatItem(
             value: totalViews.toString(),
             label: 'Total Views',
             icon: Iconsax.eye,
+            onTap: onTotalViewsTap,
           ),
           Container(height: 40, width: 1, color: AppColors.greyLight),
           _buildStatItem(
             value: favoritesCount.toString(),
             label: 'Favorites',
             icon: Iconsax.heart,
+            onTap: onFavoritesTap,
           ),
         ],
       ),
@@ -303,25 +331,30 @@ class AuthenticatedProfile extends StatelessWidget {
     required String value,
     required String label,
     required IconData icon,
+    VoidCallback? onTap,
   }) {
-    return Column(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 22),
-        const SizedBox(height: 6),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 22),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
           ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
-        ),
-      ],
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+          ),
+        ],
+      ),
     );
   }
 
@@ -339,7 +372,7 @@ class AuthenticatedProfile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '🏠 My Properties',
+                'My Properties',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -348,7 +381,7 @@ class AuthenticatedProfile extends StatelessWidget {
               ),
               if (properties.length > 3)
                 TextButton(
-                  onPressed: () => onMenuItemTap('my_properties'),
+                  onPressed: onListingsTap,
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.primary,
                   ),
@@ -647,61 +680,46 @@ class AuthenticatedProfile extends StatelessWidget {
   Widget _buildAccountActions() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
+      child: Column(
         children: [
-          // Edit Profile Button
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.primaryDark],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+          // Logout Button - full width with text
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: onLogout,
+              icon: const Icon(Iconsax.logout, size: 20),
+              label: const Text(
+                'Logout',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              child: ElevatedButton(
-                onPressed: onEditProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Iconsax.edit, size: 18),
-                    SizedBox(width: 8),
-                    Text('Edit Profile'),
-                  ],
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
             ),
           ),
 
-          const SizedBox(width: 12),
+          const SizedBox(height: 12),
 
-          // Logout Button
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.error.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: IconButton(
-              onPressed: onLogout,
-              icon: Icon(Iconsax.logout, color: AppColors.error),
-              style: IconButton.styleFrom(
-                padding: const EdgeInsets.all(14),
+          // Delete Account Button - outlined style
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: onDeleteAccount,
+              icon: const Icon(Iconsax.trash, size: 20),
+              label: const Text(
+                'Delete Account',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.error,
+                side: BorderSide(color: AppColors.error.withOpacity(0.5)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),

@@ -33,21 +33,16 @@ class ProfileProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      // Check if user is logged in
       _currentUser = await _authService.getCurrentUser();
 
       if (_currentUser != null) {
         // Load user's properties
         _userProperties = await _propertyService.getUserProperties();
 
-        // Calculate total views
-        _totalViews = _userProperties.fold(
-          0,
-          (sum, property) => sum + property.viewCount,
-        );
-
-        // Load favorites count (you'll implement this)
-        _favoritesCount = await _authService.getFavoritesCount();
+        // Get accurate stats from the server
+        final stats = await _authService.getUserStats();
+        _totalViews = stats['total_views'] ?? 0;
+        _favoritesCount = stats['favorites_count'] ?? 0;
       }
 
       _setLoading(false);
@@ -60,6 +55,14 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<void> refreshProfile() async {
     await loadProfileData();
+  }
+
+  /// Reload just the favorites count (called when returning from favorites screen).
+  Future<void> refreshFavoritesCount() async {
+    try {
+      _favoritesCount = await _authService.getFavoritesCount();
+      notifyListeners();
+    } catch (_) {}
   }
 
   Future<void> logout() async {

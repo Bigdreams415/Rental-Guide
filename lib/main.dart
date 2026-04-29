@@ -9,6 +9,7 @@ import 'features/property_detail/providers/property_detail_provider.dart';
 import 'features/search/screens/search_screen.dart';
 import 'features/search/providers/search_provider.dart';
 import 'features/profile/providers/profile_provider.dart';
+import 'features/favorites/providers/favorites_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
 import 'features/chat/screens/inbox_screen.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => InspectionProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
       ],
       child: MaterialApp(
         title: 'Direct Property',

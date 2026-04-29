@@ -16,6 +16,9 @@ class ApiEndpoints {
   static String propertyDetail(String id) => '$_base/properties/$id';
   static String updateProperty(String id) => '$_base/properties/$id';
 
+  // User Stats
+  static const String userStats = '$_base/auth/me/stats';
+
   // Favorites
   static const String favorites = '$_base/favorites/';
   static const String favoritesCount = '$_base/favorites/count';
@@ -23,6 +26,8 @@ class ApiEndpoints {
       '$_base/favorites/$propertyId';
   static String removeFavorite(String propertyId) =>
       '$_base/favorites/$propertyId';
+  static String checkFavorite(String propertyId) =>
+      '$_base/favorites/check/$propertyId';
 
   // Inspections
   static const String requestInspection = '$_base/inspections/';
