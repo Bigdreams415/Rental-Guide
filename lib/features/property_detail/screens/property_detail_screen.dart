@@ -12,6 +12,8 @@ import '../../../shared/widgets/error_widget.dart';
 import '../../../shared/widgets/property_network_image.dart';
 import '../../../core/services/auth_service.dart';
 import '../../inspections/providers/inspection_provider.dart';
+import '../../payment/providers/payment_provider.dart';
+import '../../payment/screens/payment_screen.dart';
 
 class PropertyDetailScreen extends StatefulWidget {
   final String propertyId;

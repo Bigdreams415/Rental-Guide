@@ -39,4 +39,10 @@ class ApiEndpoints {
   static String cancelInspection(String id) => '$_base/inspections/$id/cancel';
   static String completeInspection(String id) =>
       '$_base/inspections/$id/complete';
+
+  // Payments
+  static const String initiatePayment = '$_base/payments/initiate';
+  static const String myTransactions = '$_base/payments/mine';
+  static String verifyPayment(String reference) => '$_base/payments/verify/$reference';
+  static String releasePayment(String id) => '$_base/payments/$id/release';
 }
