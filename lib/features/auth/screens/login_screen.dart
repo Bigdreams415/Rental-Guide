@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
 import '../../../constants/colors.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../profile/providers/profile_provider.dart';
@@ -158,65 +160,68 @@ class _LoginScreenState extends State<LoginScreen>
 
   Future<void> _handleGoogleLogin() async {
     setState(() => _isLoading = true);
-
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId: '169258422207-ll76eii2kjcqko525tm7vk5ce6pp7i38.apps.googleusercontent.com',
+      );
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return; // user cancelled
 
+      final auth = await googleUser.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null) throw Exception('Google did not return an ID token');
+
+      final result = await AuthService().signInWithGoogle(idToken);
+
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      await context.read<ProfileProvider>().refreshProfile();
+
+      if (!result.user.isProfileComplete) {
+        navigator.pushNamedAndRemoveUntil('/complete-profile', (r) => false);
+      } else {
+        navigator.pushNamedAndRemoveUntil('/', (r) => false);
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.white),
-                const SizedBox(width: 8),
-                const Text('Google Sign-In coming soon!'),
-              ],
-            ),
-            backgroundColor: AppColors.warning,
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _handleAppleLogin() async {
-    setState(() => _isLoading = true);
-
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.info_outline, color: Colors.white),
-                const SizedBox(width: 8),
-                const Text('Apple Sign-In coming soon!'),
-              ],
-            ),
-            backgroundColor: AppColors.warning,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
+  // Apple Sign-In — coming in v2
+  // Future<void> _handleAppleLogin() async {
+  //   setState(() => _isLoading = true);
+  //   try {
+  //     await Future.delayed(const Duration(seconds: 1));
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Row(children: [
+  //             Icon(Icons.info_outline, color: Colors.white),
+  //             const SizedBox(width: 8),
+  //             const Text('Apple Sign-In coming soon!'),
+  //           ]),
+  //           backgroundColor: AppColors.warning,
+  //           behavior: SnackBarBehavior.floating,
+  //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //         ),
+  //       );
+  //     }
+  //   } finally {
+  //     if (mounted) setState(() => _isLoading = false);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -776,28 +781,21 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildPremiumSocialButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildSocialButton(
-            onTap: _handleGoogleLogin,
-            icon: 'assets/icons/google.svg',
-            label: 'Google',
-            fallbackIcon: Icons.g_mobiledata,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildSocialButton(
-            onTap: _handleAppleLogin,
-            icon: 'assets/icons/apple.svg',
-            label: 'Apple',
-            fallbackIcon: Icons.apple,
-            isApple: true,
-          ),
-        ),
-      ],
+    return _buildSocialButton(
+      onTap: _handleGoogleLogin,
+      icon: 'assets/icons/google.svg',
+      label: 'Continue with Google',
+      fallbackIcon: Icons.g_mobiledata,
     );
+    // Apple Sign-In — v2
+    // const SizedBox(width: 16),
+    // _buildSocialButton(
+    //   onTap: _handleAppleLogin,
+    //   icon: 'assets/icons/apple.svg',
+    //   label: 'Apple',
+    //   fallbackIcon: Icons.apple,
+    //   isApple: true,
+    // ),
   }
 
   Widget _buildSocialButton({

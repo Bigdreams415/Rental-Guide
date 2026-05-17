@@ -40,6 +40,10 @@ class ApiEndpoints {
   static String completeInspection(String id) =>
       '$_base/inspections/$id/complete';
 
+  // Google OAuth
+  static const String googleAuth = '$_base/auth/google';
+  static const String completeProfile = '$_base/auth/me/complete-profile';
+
   // Payments
   static const String initiatePayment = '$_base/payments/initiate';
   static const String myTransactions = '$_base/payments/mine';

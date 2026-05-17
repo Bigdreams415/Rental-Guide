@@ -112,6 +112,32 @@ class ApiClient {
     }
   }
 
+  // PATCH request
+  Future<dynamic> patch(
+    String endpoint, {
+    Map<String, dynamic>? data,
+    bool requiresAuth = false,
+  }) async {
+    try {
+      final uri = Uri.parse('$baseUrl$endpoint');
+
+      if (kDebugMode) {
+        print('🌐 PATCH Request: $uri');
+        print('📦 Data: $data');
+      }
+
+      final response = await http.patch(
+        uri,
+        headers: await _getHeaders(requiresAuth: requiresAuth),
+        body: data != null ? jsonEncode(data) : null,
+      );
+
+      return _handleResponse(response);
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   // POST multipart/form-data request (for file uploads)
   Future<dynamic> postMultipart(
     String endpoint, {

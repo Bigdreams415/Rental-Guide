@@ -4,6 +4,12 @@ import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
 import '../storage/secure_storage.dart';
 
+class AuthResult {
+  final String token;
+  final User user;
+  AuthResult({required this.token, required this.user});
+}
+
 class AuthService {
   final ApiClient _apiClient = ApiClient();
   final SecureStorage _storage = SecureStorage();
@@ -127,6 +133,43 @@ class AuthService {
     } catch (e) {
       return {'favorites': [], 'total': 0};
     }
+  }
+
+  /// Sign in (or register) with a Google ID token from the google_sign_in package.
+  Future<AuthResult> signInWithGoogle(String googleIdToken) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.googleAuth,
+      data: {'id_token': googleIdToken},
+    );
+    final token = response['access_token'] as String;
+    final user = User.fromJson(response['user'] as Map<String, dynamic>);
+    await _storage.saveToken(token);
+    await _storage.saveUser(jsonEncode(user.toJson()));
+    return AuthResult(token: token, user: user);
+  }
+
+  /// Submit phone + address for a Google user who hasn't completed their profile.
+  Future<User> completeProfile({
+    required String phoneNumber,
+    required String city,
+    required String state,
+    String? lga,
+    String? address,
+  }) async {
+    final response = await _apiClient.patch(
+      ApiEndpoints.completeProfile,
+      data: {
+        'phone_number': phoneNumber,
+        'city': city,
+        'state': state,
+        if (lga != null && lga.isNotEmpty) 'lga': lga,
+        if (address != null && address.isNotEmpty) 'address': address,
+      },
+      requiresAuth: true,
+    );
+    final user = User.fromJson(response as Map<String, dynamic>);
+    await _storage.saveUser(jsonEncode(user.toJson()));
+    return user;
   }
 
   Future<void> logout() async {

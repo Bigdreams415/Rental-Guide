@@ -12,6 +12,7 @@ import 'features/profile/providers/profile_provider.dart';
 import 'features/favorites/providers/favorites_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/register_screen.dart';
+import 'features/auth/screens/complete_profile_screen.dart';
 import 'features/chat/screens/inbox_screen.dart';
 import 'features/chat/providers/chat_provider.dart';
 import 'features/inspections/providers/inspection_provider.dart';
@@ -74,6 +75,11 @@ class MyApp extends StatelessWidget {
               builder: (context) => const RegisterScreen(),
             );
           }
+          if (settings.name == '/complete-profile') {
+            return MaterialPageRoute(
+              builder: (context) => const CompleteProfileScreen(),
+            );
+          }
           return null;
         },
       ),
@@ -103,6 +109,21 @@ class _MainScaffoldState extends State<MainScaffold> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Cold-start guard: if the user logged in with Google but never finished
+    // Step 2, redirect them to complete their profile on first frame.
+    final profile = context.read<ProfileProvider>();
+    if (!profile.isLoading && profile.needsProfileCompletion) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/complete-profile');
+        }
+      });
+    }
   }
 
   @override

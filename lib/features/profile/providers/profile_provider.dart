@@ -23,6 +23,8 @@ class ProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _currentUser != null;
+  bool get needsProfileCompletion =>
+      _currentUser != null && !_currentUser!.isProfileComplete;
 
   ProfileProvider() {
     loadProfileData();

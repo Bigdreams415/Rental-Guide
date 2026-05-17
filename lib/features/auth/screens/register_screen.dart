@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert';
 import '../../../constants/colors.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_endpoints.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../shared/widgets/loading_indicator.dart';
 import '../../profile/providers/profile_provider.dart';
@@ -196,29 +198,46 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   Future<void> _handleGoogleRegister() async {
     setState(() => _isLoading = true);
-
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        _showSnackBar('Google Sign-Up coming soon!', AppColors.warning);
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        serverClientId: '169258422207-ll76eii2kjcqko525tm7vk5ce6pp7i38.apps.googleusercontent.com',
+      );
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return; // user cancelled
+
+      final auth = await googleUser.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null) throw Exception('Google did not return an ID token');
+
+      final result = await AuthService().signInWithGoogle(idToken);
+
+      if (!mounted) return;
+      final navigator = Navigator.of(context);
+      await context.read<ProfileProvider>().refreshProfile();
+
+      if (!result.user.isProfileComplete) {
+        navigator.pushNamedAndRemoveUntil('/complete-profile', (r) => false);
+      } else {
+        navigator.pushNamedAndRemoveUntil('/', (r) => false);
       }
+    } catch (e) {
+      if (mounted) _showSnackBar(e.toString(), AppColors.error);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _handleAppleRegister() async {
-    setState(() => _isLoading = true);
-
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        _showSnackBar('Apple Sign-Up coming soon!', AppColors.warning);
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
+  // Apple Sign-In — coming in v2
+  // Future<void> _handleAppleRegister() async {
+  //   setState(() => _isLoading = true);
+  //   try {
+  //     await Future.delayed(const Duration(seconds: 1));
+  //     if (mounted) _showSnackBar('Apple Sign-Up coming soon!', AppColors.warning);
+  //   } finally {
+  //     if (mounted) setState(() => _isLoading = false);
+  //   }
+  // }
 
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -1014,27 +1033,20 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   Widget _buildPremiumSocialButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildSocialButton(
-            onTap: _handleGoogleRegister,
-            label: 'Google',
-            iconPath: 'assets/icons/google.svg',
-            fallbackIcon: Icons.g_mobiledata,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildSocialButton(
-            onTap: _handleAppleRegister,
-            label: 'Apple',
-            fallbackIcon: Icons.apple,
-            isApple: true,
-          ),
-        ),
-      ],
+    return _buildSocialButton(
+      onTap: _handleGoogleRegister,
+      label: 'Continue with Google',
+      iconPath: 'assets/icons/google.svg',
+      fallbackIcon: Icons.g_mobiledata,
     );
+    // Apple Sign-In — v2
+    // const SizedBox(width: 12),
+    // _buildSocialButton(
+    //   onTap: _handleAppleRegister,
+    //   label: 'Apple',
+    //   fallbackIcon: Icons.apple,
+    //   isApple: true,
+    // ),
   }
 
   Widget _buildSocialButton({
