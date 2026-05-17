@@ -50,3 +50,7 @@ app.*.map.json
 !.env.example
 *.local
 .claude/
+
+# Firebase / Google config files (contain API keys — never commit)
+google-services.json
+GoogleService-Info.plist
